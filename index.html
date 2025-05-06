@@ -5,7 +5,9 @@
   <title>Sarra & Ferid</title>
   <link href="fersar.png" rel="icon" type="image/x-icon" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <style>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-sA+e2oxAXo8Nve5AgaUyCzW1i+KQYAXY0U6vt9zZ2vU=" crossorigin=""/>
+	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-nPLb4joG0HoEUpKqX+CHPnV3E4MyfbgE7O2zrBFg6+c=" crossorigin=""></script
+<style>
     * {
       color:#212E53;
       margin: 0;
@@ -195,6 +197,7 @@
 	<button data-section="section2" onclick="showSection(this)">Souvenirs</button>
 	<button data-section="section3" onclick="showSection(this)">Fiançailles</button>
 	<button data-section="section4" onclick="showSection(this)">Ghibli</button>
+	<button data-section="sectionMap" onclick="showSection(this)">Cartes</button>
 </div>
 
   <main>
@@ -230,8 +233,10 @@
         <img src="duo.ghibli.002.webp" alt="duo.ghibli.002" loading="lazy">
         <img src="duo.ghibli.003.jpg" alt="duo.ghibli.003" loading="lazy">
       </div>
-
     </section>
+<section id="sectionMap" class="slider-section">
+  <div id="map" style="width:100%; height:500px;"></div>
+</section>
 
 	 	<button class="nav-button prev" onclick="prevSlide()">
 		  <i class="bi bi-arrow-left-square"></i>
@@ -321,6 +326,43 @@
     updateCountdown();
 
     document.querySelector('header .active').innerHTML = `<strong>Duo</strong>`;
+		function initLeafletMap() {
+		  // Initialiser la carte centrée sur Tunis
+		  const map = L.map('map').setView([36.8, 10.18], 12);
+		
+		  // Charger les tuiles OpenStreetMap
+		  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors',
+		    maxZoom: 19
+		  }).addTo(map);
+		
+		  // Liste des lieux à afficher
+		  const lieux = [
+		    {
+		      nom: "Salle de Fête",
+		      coord: [36.8219, 10.1658],
+		      description: "Salle Les Jasmins – La Goulette"
+		    },
+		    {
+		      nom: "Maison du Marié",
+		      coord: [36.8181, 10.1701],
+		      description: "Maison de Mohamed"
+		    },
+		    {
+		      nom: "Maison de la Mariée",
+		      coord: [36.8065, 10.1815],
+		      description: "Chez Sarra"
+		    }
+		  ];
+		
+		  // Ajouter les marqueurs sur la carte
+		  lieux.forEach(lieu => {
+		    L.marker(lieu.coord)
+		      .addTo(map)
+		      .bindPopup(`<strong>${lieu.nom}</strong><br>${lieu.description}`);
+		  });
+		}
+
 
   </script>
 </body>
