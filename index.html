@@ -336,15 +336,18 @@ function showSection(button) {
 
     document.querySelector('header .active').innerHTML = `<strong>Duo</strong>`;
 		function initLeafletMap() {
-		  // Initialiser la carte centrée sur Tunis
-		  const map = L.map('map').setView([36.8, 10.18], 12);
-		
-		  // Charger les tuiles OpenStreetMap
-		  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-		    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors',
-		    maxZoom: 19
-		  }).addTo(map);
-		
+		  // Initialisation de la carte centrée sur la position de Google Maps
+    const map = L.map('map').setView([36.1596653, 9.2668632], 12);
+
+    // Charger les tuiles OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors',
+      maxZoom: 19
+    }).addTo(map);
+
+    // Ajouter un marqueur à cette position
+    L.marker([36.1596653, 9.2668632]).addTo(map)
+      .bindPopup("<strong>Emplacement choisi</strong><br>Cette position vient de Google Maps.");
 		  // Liste des lieux à afficher
 		  const lieux = [
 		    {
