@@ -1,4 +1,4 @@
-const scriptURL = "https://script.google.com/macros/s/TON_ID/exec"; // ← à remplacer
+const scriptURL = "https://script.google.com/macros/s/AKfycbxqcIzurBYiE8oggJ2NF-z35zLHEHl9WuAWRpnbyuoKOoBUzW51LDh4rkCR8X1bBTS5/exec"; // ← à remplacer
 
     // Charger données
     fetch(scriptURL + "?action=get")
