@@ -351,13 +351,13 @@ function showSection(button) {
 // Définir une icône personnalisée pour Sarra
   var sarraIcon = L.icon({
     iconUrl: 'icone.sarra.pt.png',
-    iconSize: [32, 32],       // largeur, hauteur
+    iconSize: [40, 40],       // largeur, hauteur
     iconAnchor: [16, 32],     // centre en bas
     popupAnchor: [0, -32]     // popup au-dessus
   });
 // Ajouter le marqueur avec l'icône personnalisée et le popup stylisé
   L.marker([36.097083, 9.383750], { icon: sarraIcon }).addTo(map)
-    .bindPopup("<div style='background-color: #FFC0CB; padding: 5px; border-radius: 5px;'><b>Sarra la mariée</b><br>Lieu de résidence</div>");
+    .bindPopup("<div style='background-color: #FFC0CB; padding: 5px; border-radius: 5px;'><b>Sarra la mariée</b></div>");
 
 
 L.marker([36.087528, 9.373667]).addTo(map)
