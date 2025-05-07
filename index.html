@@ -345,32 +345,15 @@ function showSection(button) {
       maxZoom: 19
     }).addTo(map);
 
-		  // Liste des lieux à afficher
-		  const lieux = [
-		    {
-		      nom: "Salle de Fête",
-		      coord: [36.087532, 9.373673],
-		      description: "Salle HANNIBAL Siliana"
-		    },
-		    {
-		      nom: "Maison du Marié",
-		      coord: [36.1596653, 9.2668632],
-		      description: "Ferid"
-		    },
-		    {
-		      nom: "Maison de la Mariée",
-		      coord: [36.1596653, 9.2668632],
-		      description: "Sarra"
-		    }
-		  ];
-		
-		  // Ajouter les marqueurs sur la carte
-		  lieux.forEach(lieu => {
-		    L.marker(lieu.coord)
-		      .addTo(map)
-		      .bindPopup(`<strong>${lieu.nom}</strong><br>${lieu.description}`);
-		  });
-		}
+		  // Marqueurs
+  L.marker([36.241667, 9.223806]).addTo(map)
+    .bindPopup("<b>Ferid le marié</b><br>Lieu de résidence");
+
+  L.marker([36.097083, 9.383750]).addTo(map)
+    .bindPopup("<b>Sarra la mariée</b><br>Lieu de résidence");
+
+  L.marker([36.087528, 9.373667]).addTo(map)
+    .bindPopup("<b>Salle des fêtes HANNIBAL</b>");
 
 
   </script>
