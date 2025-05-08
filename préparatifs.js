@@ -10,7 +10,7 @@ fetch(sheetUrl)
 
     data.forEach(row => {
       const tr = document.createElement('tr');
-      const cols = ['Éléments', 'Coté administratif', 'Coûts', 'Part Sarra', 'Part Ferid', 'Acompte Sarra', 'Acompte Ferid', 'Restant'];
+      const cols = ['Eléments', 'Coté administratif', 'Coûts', 'Part Sarra', 'Part Ferid', 'Acompte Sarra', 'Acompte Ferid', 'Restant'];
       
       cols.forEach(col => {
         const td = document.createElement('td');
