@@ -188,9 +188,10 @@ Width: auto;
 			margin-top: auto;
 		}
 	   	#mobhour {
-		  font-size: 40px;
-		  display: inline-block;
-		  transition: transform 0.5s ease;
+		    font-size: 48px;
+		    /*display: block;*/
+		    margin: auto;
+		    transition: transform 1s ease-in-out;
 		}
     }
   </style>
@@ -265,10 +266,10 @@ Width: auto;
 		</button>
 	  
   </main>
-<div class="countdown-group">
-	<div id="mobhour"><i class="bi bi-hourglass-split"></i></div>
-  <div class="countdown-mobile" id="countdown-mobile"></div>
-</div>
+		<div class="countdown-group">
+			<div><i id="mobhour" class="bi bi-hourglass-split"></i></div>
+			<div class="countdown-mobile" id="countdown-mobile"></div>
+		</div>
   <script>
     let currentIndex = 0;
 let mapInitialized = false;
@@ -390,16 +391,15 @@ L.marker([36.087528, 9.373667]).addTo(map)
     .bindPopup("<div style='background-color: #90EE90; padding: 5px;'><b>Salle des fêtes HANNIBAL</b></div>");
 
 		}
-	  // Animation du sablier mobile
-const mobHour = document.getElementById('mobhour');
-if (mobHour) {
-  setInterval(() => {
-    mobHour.style.transform = 'rotate(180deg)';
-    setTimeout(() => {
-      mobHour.style.transform = 'rotate(0deg)';
-    }, 500);
-  }, 5000);
-}
+	  	// Animation du sablier mobile
+		 let angle = 0;
+		  const icon = document.querySelector("#mobhour i");
+		
+		  setInterval(() => {
+		    angle += 90;
+		    icon.style.transform = `rotate(${angle}deg)`;
+		  }, 5000);
+	  
   </script>
 	<script src="préparatifs.js"></script>
 </body>
