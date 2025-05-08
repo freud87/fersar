@@ -189,6 +189,25 @@
 			justify-content: space-around;
 			margin-top: auto;
 		}
+	    	 @keyframes flip {
+		    0% {
+		      transform: rotateY(0deg);
+		    }
+		    50% {
+		      transform: rotateY(180deg);
+		    }
+		    100% {
+		      transform: rotateY(360deg);
+		    }
+		  }
+		
+		  #mobhour {
+		    display: inline-block;
+		    animation: flip 2s ease-in-out infinite;
+		  }
+		.flip-animation {
+		  animation: flip 2s ease-in-out infinite;
+		}
 	   	
     }
   </style>
@@ -388,6 +407,8 @@ L.marker([36.087528, 9.373667]).addTo(map)
     .bindPopup("<div style='background-color: #90EE90; padding: 5px;'><b>Salle des fêtes HANNIBAL</b></div>");
 
 		}
+	document.getElementById("mobhour").classList.add("flip-animation");
+
 	  
   </script>
 	<script src="préparatifs.js"></script>
