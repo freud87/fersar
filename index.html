@@ -190,11 +190,11 @@
 			margin-top: auto;
 		}
 	    	 #mobhour {
-		    font-size: 2.5em; /* adapte la taille si besoin */
-		    display: inline-block;
-		    transition: transform 0.6s ease-in-out;
-		    transform-origin: center; /* <-- clé pour éviter le décalage */
-		}
+		      font-size: 60px;
+		      display: block;
+		      margin: 100px auto;
+		      transition: transform 0.6s ease-in-out;
+		    }
 
 
 		
@@ -273,7 +273,7 @@
 	  
   </main>
 		<div class="countdown-group">
-			<div id="mobhour"><i class="bi bi-hourglass-split"></i></div>
+			<i id="mobhour" class="bi bi-hourglass-split"></i>
 			<div class="countdown-mobile" id="countdown-mobile"></div>
 		</div>
   <script>
@@ -399,12 +399,12 @@ L.marker([36.087528, 9.373667]).addTo(map)
 		}
 
 		let flipped = false;
-		const icon = document.getElementById("mobhour");
+		  const icon = document.getElementById("mobhour");
 		
-		setInterval(() => {
+		  setInterval(() => {
 		    flipped = !flipped;
 		    icon.style.transform = flipped ? 'scaleY(-1)' : 'scaleY(1)';
-		}, 5000);
+		  }, 5000);
 	  
   </script>
 	<script src="préparatifs.js"></script>
