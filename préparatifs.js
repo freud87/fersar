@@ -2,33 +2,31 @@
 const sheetUrl = "https://script.google.com/macros/s/AKfycbxqcIzurBYiE8oggJ2NF-z35zLHEHl9WuAWRpnbyuoKOoBUzW51LDh4rkCR8X1bBTS5/exec";
 
 // Charger les données depuis Google Sheets
-    fetch(sheetUrl)
-      .then(response => response.json())
-      .then(data => {
-        const tbody = document.getElementById('editableTable').getElementsByTagName('tbody')[0];
-        data.forEach(row => {
-          const tr = document.createElement('tr');
-          ['Éléments', 'Coté-administratif', 'Coûts', 'Part-Sarra', 'Part-Ferid', 'Acompte-Sarra', 'Acompte-Ferid', 'Restant'].forEach(col => {
-            const td = document.createElement('td');
-            td.contentEditable = "true";
-            td.innerText = row[col] || '';
-            tr.appendChild(td);
-          });
-          tbody.appendChild(tr);
-        });
-      });
+fetch(sheetUrl)
+  .then(response => response.json())
+  .then(data => {
+    const tbody = document.getElementById('editableTable').getElementsByTagName('tbody')[0];
+    tbody.innerHTML = ''; // Vide d'abord le tableau
 
-    // Ajouter une ligne vide
-    function addRow() {
-      const tbody = document.getElementById('editableTable').getElementsByTagName('tbody')[0];
+    data.forEach(row => {
       const tr = document.createElement('tr');
-      for (let i = 0; i < 8; i++) {
+      const cols = ['Éléments', 'Coté administratif', 'Coûts', 'Part Sarra', 'Part Ferid', 'Acompte Sarra', 'Acompte Ferid', 'Restant'];
+      
+      cols.forEach(col => {
         const td = document.createElement('td');
         td.contentEditable = "true";
+        td.innerText = row[col] !== undefined ? row[col] : '';
         tr.appendChild(td);
-      }
+      });
+      
       tbody.appendChild(tr);
-    }
+    });
+  })
+  .catch(error => {
+    console.error('Erreur de chargement JSON :', error);
+    alert('Erreur lors de l\'import des données');
+  });
+
 
     // Sauvegarder les données vers Google Sheets
     function saveTable() {
