@@ -27,7 +27,9 @@ fetch(sheetUrl)
     alert('Erreur lors de l\'import des données');
   });
 
-
+function showSaveReminder() {
+  document.getElementById('sauver').style.display = 'block';
+}
     // Sauvegarder les données vers Google Sheets
     function saveTable() {
       const table = document.getElementById('editableTable');
