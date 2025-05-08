@@ -379,14 +379,19 @@
 			iconAnchor: [16, 32],     // centre en bas
 			popupAnchor: [0, -32]     // popup au-dessus
 			});
+			// Définir une icône personnalisée pour mariage
+			var mariageIcon = L.icon({
+			iconUrl: 'duo.heart.png',
+			iconSize: [40, 40],       // largeur, hauteur
+			iconAnchor: [16, 32],     // centre en bas
+			popupAnchor: [0, -32]     // popup au-dessus
+			});
 			// Ajouter le marqueur avec l'icône personnalisée et le popup stylisé
 			L.marker([36.097083, 9.383750], { icon: sarraIcon }).addTo(map)
 			.bindPopup("<div style='background-color: #FFC0CB; padding: 5px; border-radius: 5px;'><b>Sarra la mariée</b></div>");
 			L.marker([36.234494, 9.200618], { icon: feridIcon }).addTo(map)
 			.bindPopup("<div style='background-color: #FFC0CB; padding: 5px; border-radius: 5px;'><b>Ferid le marié</b></div>");
-			
-			
-			L.marker([36.087528, 9.373667]).addTo(map)
+			L.marker([36.087528, 9.373667], { icon: mariageIcon }).addTo(map)
 			.bindPopup("<div style='background-color: #90EE90; padding: 5px;'><b>Salle des fêtes HANNIBAL</b></div>");
 			}
 			
