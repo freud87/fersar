@@ -168,10 +168,10 @@
 		}
 
 		.sidebar button {
-		/*	flex: 1;*/
+			/*flex: 1;*/
 			text-align: center;
-Width: auto;
-		}
+			Width: auto;
+			}
 		main {
 			flex: 1 1 auto; /* Ici, main prend tout l'espace restant */
 			padding: 1em;
@@ -393,12 +393,12 @@ L.marker([36.087528, 9.373667]).addTo(map)
 
 		}
 	  	// Animation du sablier mobile
-		 let angle = 0;
+		 let flipped = false;
 		  const icon = document.getElementById("mobhour");
 		
 		  setInterval(() => {
-		    angle += 180;
-		    icon.style.transform = `rotate(${angle}deg)`;
+		    flipped = !flipped;
+		    icon.style.transform = flipped ? 'scaleY(-1)' : 'scaleY(1)';
 		  }, 5000);
 	  
   </script>
