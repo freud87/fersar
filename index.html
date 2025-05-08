@@ -187,6 +187,15 @@ Width: auto;
 			flex-direction: row;
 			margin-top: auto;
 		}
+	   	#mobhour {
+		  font-size: 40px;
+		  animation: rotateHourglass 5s linear infinite;
+		}
+		
+		@keyframes rotateHourglass {
+		  0% {transform: rotate(0deg);}
+		  100% { transform: rotate(360deg);}
+		}
     }
   </style>
 </head>
@@ -261,7 +270,7 @@ Width: auto;
 	  
   </main>
 <div class="countdown-group">
-	<div><i class="bi bi-hourglass-split"></i></div>
+	<div><i id="mobhour" class="bi bi-hourglass-split"></i></div>
   <div class="countdown-mobile" id="countdown-mobile"></div>
 </div>
   <script>
