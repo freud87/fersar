@@ -189,12 +189,8 @@ Width: auto;
 		}
 	   	#mobhour {
 		  font-size: 40px;
-		  animation: rotateHourglass 5s linear infinite;
-		}
-		
-		@keyframes rotateHourglass {
-		  0% {transform: rotate(0deg);}
-		  100% { transform: rotate(360deg);}
+		  display: inline-block;
+		  transition: transform 0.5s ease;
 		}
     }
   </style>
@@ -394,6 +390,16 @@ L.marker([36.087528, 9.373667]).addTo(map)
     .bindPopup("<div style='background-color: #90EE90; padding: 5px;'><b>Salle des fêtes HANNIBAL</b></div>");
 
 		}
+	  // Animation du sablier mobile
+const mobHour = document.getElementById('mobhour');
+if (mobHour) {
+  setInterval(() => {
+    mobHour.style.transform = 'rotate(180deg)';
+    setTimeout(() => {
+      mobHour.style.transform = 'rotate(0deg)';
+    }, 500);
+  }, 5000);
+}
   </script>
 	<script src="préparatifs.js"></script>
 </body>
