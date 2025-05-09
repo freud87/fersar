@@ -60,9 +60,11 @@ function markDirty() {
 
 // Supprimer une ligne du tableau
 function removeRow(button) {
-  const row = button.closest("tr");
-  row.remove();
-  markDirty();
+  if (confirm("❗ Voulez-vous vraiment supprimer cette ligne ?")) {
+    const row = button.closest("tr");
+    row.remove();
+    markDirty();
+  }
 }
 
 // Échapper le HTML pour éviter les injections
