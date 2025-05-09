@@ -1,24 +1,37 @@
-// Chargement du tableau au moment où la section Préparatifs devient active
-document.addEventListener("DOMContentLoaded", () => {
-  const observer = new MutationObserver(() => {
-    const prepSection = document.getElementById("Préparatifs");
-    if (prepSection && prepSection.classList.contains("active") && !prepSection.dataset.loaded) {
-      prepSection.dataset.loaded = "true";
-      loadTableFromSheet();
-    }
-  });
+// Fonction appelée quand on clique sur "Préparatifs"
+window.showSection = (function(originalShowSection) {
+  return function(button) {
+    originalShowSection(button); // Appelle la fonction originale
 
-  observer.observe(document.body, { childList: true, subtree: true });
-});
+    const sectionId = button.getAttribute("data-section");
+    if (sectionId === "Préparatifs") {
+      const prepSection = document.getElementById("Préparatifs");
+
+      // Si le conteneur du tableau n'existe pas encore, on le crée
+      let tableContainer = prepSection.querySelector("#tableContainer");
+      if (!tableContainer) {
+        const newDiv = document.createElement("div");
+        newDiv.id = "tableContainer";
+        prepSection.appendChild(newDiv);
+        tableContainer = newDiv;
+      }
+
+      // Si le tableau n'a jamais été chargé, on le charge
+      if (!prepSection.dataset.loaded) {
+        prepSection.dataset.loaded = "true";
+        loadTableFromSheet();
+      }
+    }
+  };
+})(window.showSection);
 
 function loadTableFromSheet() {
-  // Remplacez par l'ID de votre Google Sheet (visible dans l'URL du fichier Sheets)
-  const sheetId = '1HBNk2OHy-GikbNhwQf8hD_QAx42rLqSNozpwMU9EPQM';
-
-  // ID de votre Web App récupéré depuis l'URL donnée
+  const sheetId = '1HBNk2OHy-GikbNhwQf8hD_QAx42rLqSNozpwMU9EPQM'; // ID de votre Google Sheet
   const scriptId = 'AKfycbxqcIzurBYiE8oggJ2NF-z35zLHEHl9WuAWRpnbyuoKOoBUzW51LDh4rkCR8X1bBTS5';
 
-  fetch(`https://script.google.com/macros/s/ ${scriptId}/exec?action=read`)
+  const url = `https://script.google.com/macros/s/ ${scriptId}/exec?action=read`;
+
+  fetch(url)
     .then(res => res.json())
     .then(data => {
       renderEditableTable(data);
@@ -31,6 +44,10 @@ function loadTableFromSheet() {
 
 function renderEditableTable(data) {
   let html = `
+    <button id="addRowBtn">➕ Ajouter une ligne</button>
+    <button id="saveBtn">💾 Enregistrer</button>
+    <p class="save-warning" id="saveWarning">⚠️ Vous devez sauvegarder les modifications.</p>
+
     <table id="dataTable">
       <thead>
         <tr>
@@ -57,20 +74,51 @@ function renderEditableTable(data) {
 
   html += `</tbody></table>`;
   document.getElementById("tableContainer").innerHTML = html;
-}
 
-document.getElementById("addRowBtn")?.addEventListener("click", () => {
-  const table = document.querySelector("#dataTable tbody");
-  const newRow = table.insertRow();
-  const headers = ["", "", "", "", "", "", "", ""];
-  headers.forEach((_, i) => {
-    const cell = newRow.insertCell(i);
-    cell.innerHTML = `<input type="text" onchange="markDirty()"/>`;
+  // Réattacher les écouteurs d'événements aux nouveaux boutons
+  document.getElementById("addRowBtn")?.addEventListener("click", () => {
+    const table = document.querySelector("#dataTable tbody");
+    const newRow = table.insertRow();
+    const headers = ["", "", "", "", "", "", "", ""];
+    headers.forEach((_, i) => {
+      const cell = newRow.insertCell(i);
+      cell.innerHTML = `<input type="text" onchange="markDirty()"/>`;
+    });
+    const actionCell = newRow.insertCell(headers.length);
+    actionCell.innerHTML = `<button onclick="removeRow(this)">Supprimer</button>`;
+    markDirty();
   });
-  const actionCell = newRow.insertCell(headers.length);
-  actionCell.innerHTML = `<button onclick="removeRow(this)">Supprimer</button>`;
-  markDirty();
-});
+
+  document.getElementById("saveBtn")?.addEventListener("click", async () => {
+    const rows = document.querySelectorAll("#dataTable tbody tr");
+    const newData = [];
+    rows.forEach(row => {
+      const cells = row.querySelectorAll("input");
+      const rowData = Array.from(cells).map(cell => cell.value.trim());
+      newData.push(rowData);
+    });
+
+    const url = `https://script.google.com/macros/s/ ${scriptId}/exec?action=write`;
+
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify({ data: newData })
+      });
+
+      const result = await res.json();
+      if (result.status === "success") {
+        alert("✅ Données enregistrées avec succès !");
+        document.getElementById("saveWarning").style.display = "none";
+      } else {
+        alert("❌ Une erreur est survenue lors de l'enregistrement.");
+      }
+    } catch (err) {
+      console.error("Erreur réseau :", err);
+      alert("⚠️ Impossible d’enregistrer les données. Vérifiez votre connexion.");
+    }
+  });
+}
 
 function removeRow(btn) {
   const row = btn.parentNode.parentNode;
@@ -82,38 +130,7 @@ function markDirty() {
   document.getElementById("saveWarning").style.display = "block";
 }
 
-document.getElementById("saveBtn")?.addEventListener("click", async () => {
-  const rows = document.querySelectorAll("#dataTable tbody tr");
-  const newData = [];
-  rows.forEach(row => {
-    const cells = row.querySelectorAll("input");
-    const rowData = Array.from(cells).map(cell => cell.value.trim());
-    newData.push(rowData);
-  });
-
-  const scriptId = 'AKfycbxqcIzurBYiE8oggJ2NF-z35zLHEHl9WuAWRpnbyuoKOoBUzW51LDh4rkCR8X1bBTS5';
-  const url = `https://script.google.com/macros/s/ ${scriptId}/exec?action=write`;
-
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      body: JSON.stringify({ data: newData })
-    });
-
-    const result = await res.json();
-    if (result.status === "success") {
-      alert("✅ Données enregistrées avec succès !");
-      document.getElementById("saveWarning").style.display = "none";
-    } else {
-      alert("❌ Une erreur est survenue lors de l'enregistrement.");
-    }
-  } catch (err) {
-    console.error("Erreur réseau :", err);
-    alert("⚠️ Impossible d’enregistrer les données. Vérifiez votre connexion.");
-  }
-});
-
-// Fonction pour éviter les failles XSS
+// Évite les failles XSS en échappant le HTML
 function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
