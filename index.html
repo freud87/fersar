@@ -109,8 +109,7 @@
 				gap: 1rem;
 				margin-bottom: 1rem;
 			}
-			.tableicons button,
-			.tableicons {
+			.tableicons button {
 				background-color: #f8f9fa;
 				border: 1px solid;
 				padding: 0.5rem 1rem;
@@ -329,6 +328,13 @@
         alert("Erreur : Impossible de charger le tableau. Vérifiez que préparatifs.js est bien chargé.");
       }
     }
+		// Masquer les boutons de navigation pour certaines sections
+		const navButtons = document.querySelectorAll('.nav-button');
+		if (sectionId === "Préparatifs" || sectionId === "sectionMap") {
+		navButtons.forEach(btn => btn.style.display = "none");
+		} else {
+		navButtons.forEach(btn => btn.style.display = "inline-flex");
+		}
   }
 
   function updateSlide() {
