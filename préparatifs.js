@@ -1,6 +1,6 @@
-/**
- * Charge les données depuis Google Sheets uniquement si la section #Préparatifs est active
- */
+const scriptId = 'AKfycbxqcIzurBYiE8oggJ2NF-z35zLHEHl9WuAWRpnbyuoKOoBUzW51LDh4rkCR8X1bBTS5';
+const sheetURL = `https://script.google.com/macros/s/${scriptId}/exec`;
+
 async function loadTableFromSheet() {
   const sheetId = '1HBNk2OHy-GikbNhwQf8hD_QAx42rLqSNozpwMU9EPQM';
   const scriptId = 'AKfycbxqcIzurBYiE8oggJ2NF-z35zLHEHl9WuAWRpnbyuoKOoBUzW51LDh4rkCR8X1bBTS5';
@@ -82,7 +82,7 @@ function renderEditableTable(data) {
     // Ajouter les en-têtes (ligne 0) en première ligne à réécrire dans Sheets
     const finalData = [data[0], ...newData];
 
-    const url = `https://script.google.com/macros/s/${scriptId}/exec?action=write`;
+    const url = `${sheetURL}?action=write`;
 
     try {
       const res = await fetch(url, {
