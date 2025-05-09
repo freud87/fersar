@@ -102,8 +102,9 @@
 				width: 100%;
 				height: 100%;
 			}
-			#Préparatifs button {
-				margin: 10px 0;
+			.tableicons {
+				display: flex;
+				flex-direction: row;
 			}
 			#sauver { display: none; }
 			.nav-button {
@@ -248,9 +249,11 @@
 			<div id="map"></div>
 		</section>
 		<section id="Préparatifs" class="slider-section">
-			<button id="addRowBtn">➕ Ajouter une ligne</button>
-			<button id="saveBtn">💾 Enregistrer</button>
-			<p class="save-warning" id="saveWarning">⚠️ Vous devez sauvegarder les modifications.</p>
+			<div class="tableicons">
+				<button id="addRowBtn"><i class="bi bi-plus-square"></i> Ajouter une ligne</button>
+				<button id="saveBtn"><i class="bi bi-floppy"></i> Enregistrer</button>
+				<p class="save-warning" id="saveWarning"><i class="bi bi-exclamation-triangle"></i> Vous devez sauvegarder les modifications.</p>
+			</div>
 			<div id="tableContainer"></div>
 		</section>
 		<button class="nav-button prev" onclick="prevSlide()">
