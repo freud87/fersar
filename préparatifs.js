@@ -1,53 +1,43 @@
-// Fonction appelée quand on clique sur "Préparatifs"
-window.showSection = (function(originalShowSection) {
-  return function(button) {
-    originalShowSection(button); // Appelle la fonction originale
-
-    const sectionId = button.getAttribute("data-section");
-    if (sectionId === "Préparatifs") {
-      const prepSection = document.getElementById("Préparatifs");
-
-      // Si le conteneur du tableau n'existe pas encore, on le crée
-      let tableContainer = prepSection.querySelector("#tableContainer");
-      if (!tableContainer) {
-        const newDiv = document.createElement("div");
-        newDiv.id = "tableContainer";
-        prepSection.appendChild(newDiv);
-        tableContainer = newDiv;
-      }
-
-      // Si le tableau n'a jamais été chargé, on le charge
-      if (!prepSection.dataset.loaded) {
-        prepSection.dataset.loaded = "true";
-        loadTableFromSheet();
-      }
-    }
-  };
-})(window.showSection);
-
-function loadTableFromSheet() {
-  const sheetId = '1HBNk2OHy-GikbNhwQf8hD_QAx42rLqSNozpwMU9EPQM'; // ID de votre Google Sheet
+/**
+ * Charge les données depuis Google Sheets uniquement si la section #Préparatifs est active
+ */
+async function loadTableFromSheet() {
+  const sheetId = '1HBNk2OHy-GikbNhwQf8hD_QAx42rLqSNozpwMU9EPQM';
   const scriptId = 'AKfycbxqcIzurBYiE8oggJ2NF-z35zLHEHl9WuAWRpnbyuoKOoBUzW51LDh4rkCR8X1bBTS5';
 
   const url = `https://script.google.com/macros/s/ ${scriptId}/exec?action=read`;
 
-  fetch(url)
-    .then(res => res.json())
-    .then(data => {
-      renderEditableTable(data);
-    })
-    .catch(err => {
-      console.error("Erreur lors du chargement des données :", err);
-      alert("Impossible de charger les données depuis Google Sheets.");
-    });
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+
+    console.log("Données reçues :", data);
+
+    const prepSection = document.getElementById("Préparatifs");
+
+    // Créer le conteneur du tableau si inexistant
+    let tableContainer = prepSection.querySelector("#tableContainer");
+    if (!tableContainer) {
+      tableContainer = document.createElement("div");
+      tableContainer.id = "tableContainer";
+      prepSection.appendChild(tableContainer);
+    }
+
+    renderEditableTable(data);
+  } catch (err) {
+    console.error("Erreur lors du chargement des données :", err);
+    alert("Impossible de charger les données depuis Google Sheets.");
+  }
 }
 
+/**
+ * Génère le tableau éditable à partir des données
+ */
 function renderEditableTable(data) {
   let html = `
     <button id="addRowBtn">➕ Ajouter une ligne</button>
     <button id="saveBtn">💾 Enregistrer</button>
     <p class="save-warning" id="saveWarning">⚠️ Vous devez sauvegarder les modifications.</p>
-
     <table id="dataTable">
       <thead>
         <tr>
@@ -75,7 +65,7 @@ function renderEditableTable(data) {
   html += `</tbody></table>`;
   document.getElementById("tableContainer").innerHTML = html;
 
-  // Réattacher les écouteurs d'événements aux nouveaux boutons
+  // Attacher les événements aux boutons
   document.getElementById("addRowBtn")?.addEventListener("click", () => {
     const table = document.querySelector("#dataTable tbody");
     const newRow = table.insertRow();
@@ -130,7 +120,6 @@ function markDirty() {
   document.getElementById("saveWarning").style.display = "block";
 }
 
-// Évite les failles XSS en échappant le HTML
 function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
