@@ -87,20 +87,19 @@ function addRow() {
 
 // Sauvegarder les données dans Google Sheets
 async function saveData() {
-  const rows = document.querySelectorAll("#tableEditable tbody tr");
+  const rows = document.querySelectorAll("#tableContainer tbody tr");
   const newData = Array.from(rows).map(row => {
     const inputs = row.querySelectorAll("input");
     return Array.from(inputs).map(input => input.value.trim());
   });
 
-  const headers = Array.from(document.querySelectorAll("#tableEditable thead th"))
+  const headers = Array.from(document.querySelectorAll("#tableContainer thead th"))
     .slice(0, -1)
     .map(th => th.textContent.trim());
 
   const finalData = [headers, ...newData];
-  const url = `${sheetURL}?action=write`;
 
-  console.log("Données à enregistrer :", finalData);
+  const url = `${sheetURL}?action=write`;
 
   try {
     const res = await fetch(url, {
@@ -108,22 +107,26 @@ async function saveData() {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ data: finalData })
+      body: JSON.stringify({ data: finalData }),
+      redirect: "follow"
     });
 
-    const result = await res.json();
+    const resultText = await res.text();
+    console.log("Réponse du serveur :", resultText);
+
+    const result = JSON.parse(resultText);
     if (result.status === "success") {
       alert("✅ Données enregistrées avec succès !");
-      const warning = document.getElementById("saveWarning");
-      if (warning) warning.style.display = "none";
+      document.getElementById("saveWarning").style.display = "none";
     } else {
-      alert("❌ Une erreur est survenue lors de l'enregistrement : " + result.message);
+      alert("❌ Une erreur est survenue lors de l'enregistrement.");
     }
   } catch (err) {
     console.error("Erreur réseau :", err);
     alert("⚠️ Impossible d’enregistrer les données. Vérifiez votre connexion.");
   }
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("addRowBtn")?.addEventListener("click", addRow);
