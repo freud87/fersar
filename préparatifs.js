@@ -136,7 +136,10 @@ document.getElementById("saveBtn")?.addEventListener("click", async () => {
   const finalData = [headers, ...newData];
 
   const url = `https://script.google.com/macros/s/${scriptId}/exec?action=write`;
-
+  
+console.log("Données à enregistrer :", finalData);
+console.log("URL appelée :", url);
+  
   try {
     const res = await fetch(url, {
       method: "POST",
