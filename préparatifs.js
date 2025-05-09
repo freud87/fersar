@@ -35,9 +35,6 @@ async function loadTableFromSheet() {
  */
 function renderEditableTable(data) {
   let html = `
-    <button id="addRowBtn">➕ Ajouter une ligne</button>
-    <button id="saveBtn">💾 Enregistrer</button>
-    <p class="save-warning" id="saveWarning">⚠️ Vous devez sauvegarder les modifications.</p>
     <table id="dataTable">
       <thead>
         <tr>
@@ -47,7 +44,6 @@ function renderEditableTable(data) {
       </thead>
       <tbody>`;
 
-  // Commencer à partir de la deuxième ligne : data.slice(1)
   data.slice(1).forEach((row, index) => {
     html += `<tr>`;
     for (let i = 0; i < row.length; i++) {
@@ -59,16 +55,16 @@ function renderEditableTable(data) {
   html += `</tbody></table>`;
   document.getElementById("tableContainer").innerHTML = html;
 
-  // Attacher les événements aux boutons
+  // Rattacher les événements aux boutons déjà dans le HTML
   document.getElementById("addRowBtn")?.addEventListener("click", () => {
     const table = document.querySelector("#dataTable tbody");
     const newRow = table.insertRow();
-    const headers = ["", "", "", "", "", "", "", ""];
-    headers.forEach((_, i) => {
+    const nbCols = data[0].length;
+    for (let i = 0; i < nbCols; i++) {
       const cell = newRow.insertCell(i);
       cell.innerHTML = `<input type="text" onchange="markDirty()"/>`;
-    });
-    const actionCell = newRow.insertCell(headers.length);
+    }
+    const actionCell = newRow.insertCell(nbCols);
     actionCell.innerHTML = `<button onclick="removeRow(this)">Supprimer</button>`;
     markDirty();
   });
@@ -76,18 +72,22 @@ function renderEditableTable(data) {
   document.getElementById("saveBtn")?.addEventListener("click", async () => {
     const rows = document.querySelectorAll("#dataTable tbody tr");
     const newData = [];
+
     rows.forEach(row => {
       const cells = row.querySelectorAll("input");
       const rowData = Array.from(cells).map(cell => cell.value.trim());
       newData.push(rowData);
     });
 
+    // Ajouter les en-têtes (ligne 0) en première ligne à réécrire dans Sheets
+    const finalData = [data[0], ...newData];
+
     const url = `https://script.google.com/macros/s/${scriptId}/exec?action=write`;
 
     try {
       const res = await fetch(url, {
         method: "POST",
-        body: JSON.stringify({ data: newData })
+        body: JSON.stringify({ data: finalData })
       });
 
       const result = await res.json();
