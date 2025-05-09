@@ -5,7 +5,7 @@ async function loadTableFromSheet() {
   const sheetId = '1HBNk2OHy-GikbNhwQf8hD_QAx42rLqSNozpwMU9EPQM';
   const scriptId = 'AKfycbxqcIzurBYiE8oggJ2NF-z35zLHEHl9WuAWRpnbyuoKOoBUzW51LDh4rkCR8X1bBTS5';
 
-  const url = `https://script.google.com/macros/s/ ${scriptId}/exec?action=read`;
+  const url = `https://script.google.com/macros/s/${scriptId}/exec?action=read`;
 
   try {
     const res = await fetch(url);
@@ -88,7 +88,7 @@ function renderEditableTable(data) {
       newData.push(rowData);
     });
 
-    const url = `https://script.google.com/macros/s/ ${scriptId}/exec?action=write`;
+    const url = `https://script.google.com/macros/s/${scriptId}/exec?action=write`;
 
     try {
       const res = await fetch(url, {
