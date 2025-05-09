@@ -31,7 +31,7 @@ async function loadTableFromSheet() {
 // Générer le tableau éditable
 function renderEditableTable(data) {
   let html = `
-    <table id="dataTable">
+    <table id="tableContainer">
       <thead>
         <tr>
           ${data[0].map(title => `<th>${escapeHtml(title)}</th>`).join('')}
@@ -76,8 +76,8 @@ function escapeHtml(text) {
 
 // Ajouter une nouvelle ligne vide
 function addRow() {
-  const table = document.querySelector("#dataTable tbody");
-  const nbCols = document.querySelectorAll("#dataTable thead th").length - 1; // exclure "Action"
+  const table = document.querySelector("#tableContainer tbody");
+  const nbCols = document.querySelectorAll("#tableContainer thead th").length - 1; // exclure "Action"
   const newRow = table.insertRow();
 
   for (let i = 0; i < nbCols; i++) {
@@ -93,14 +93,14 @@ function addRow() {
 
 // Sauvegarder les données dans Google Sheets
 async function saveData() {
-  const rows = document.querySelectorAll("#dataTable tbody tr");
+  const rows = document.querySelectorAll("#tableContainer tbody tr");
   const newData = Array.from(rows).map(row => {
     const inputs = row.querySelectorAll("input");
     return Array.from(inputs).map(input => input.value.trim());
   });
 
   // Extraire les en-têtes
-  const headers = Array.from(document.querySelectorAll("#dataTable thead th"))
+  const headers = Array.from(document.querySelectorAll("#tableContainer thead th"))
     .slice(0, -1)
     .map(th => th.textContent.trim());
 
