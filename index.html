@@ -378,11 +378,7 @@
     const formattedSeconds = String(seconds).padStart(2, '0');
 
     countdownEl.innerHTML = `<i class="bi bi-hourglass-split"></i> ${days}j ${formattedHours}h ${formattedMinutes}m ${formattedSeconds}s`;
-    countdownMobileEl.innerHTML = `
-      ${days} jours<br>
-      ${formattedHours} heures<br>
-      ${formattedMinutes} minutes<br>
-      ${formattedSeconds} secondes`;
+    countdownMobileEl.innerHTML = `${days} jours,${formattedHours} heures,${formattedMinutes} minutes et ${formattedSeconds} secondes`;
   }
 
   setInterval(updateCountdown, 1000);
