@@ -43,7 +43,7 @@ function renderEditableTable(data) {
   data.slice(1).forEach(row => {
     html += `<tr>`;
     row.forEach(cell => {
-      html += `<td><input type="text" value="${escapeHtml(cell)}" onchange="markDirty()" /></td>`;
+      html += `<td><input type="text" value="${escapeHtml(cell)}" oninput="markDirty()" /></td>`;
     });
     html += `<td><button onclick="removeRow(this)">Supprimer</button></td></tr>`;
   });
@@ -80,7 +80,7 @@ function addRow() {
 
   for (let i = 0; i < nbCols; i++) {
     const cell = newRow.insertCell(i);
-    cell.innerHTML = `<input type="text" onchange="markDirty()" />`;
+    cell.innerHTML = `<input type="text" oninput="markDirty()" />`;
   }
 
   const actionCell = newRow.insertCell(nbCols);
