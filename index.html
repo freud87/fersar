@@ -264,140 +264,153 @@
 			<i id="mobhour" class="bi bi-hourglass-split"></i>
 			<div class="countdown-mobile" id="countdown-mobile"></div>
 		</div>
-		<script>
-			let currentIndex = 0;
-			let mapInitialized = false;
-			
-			function showSection(button) {
-			const sectionId = button.getAttribute("data-section");
-			const sectionName = button.textContent.trim();
-			
-			document.querySelectorAll('.slider-section').forEach(section => {
-			section.classList.remove('active');
-			});
-			
-			const activeSection = document.getElementById(sectionId);
-			activeSection.classList.add('active');
-			
-			document.querySelector('header .active').innerHTML = `<strong>${sectionName}</strong>`;
-			
-			currentIndex = 0;
-			updateSlide();
-			
-			if (sectionId === "sectionMap" && !mapInitialized) {
-			initLeafletMap();
-			mapInitialized = true;
-			}
-			}
-			
-			function updateSlide() {
-			const activeSlides = document.querySelector('.slider-section.active .slides');
-			if (!activeSlides) return;
-			activeSlides.style.transform = `translateX(-${currentIndex * 100}%)`;
-			}
-			
-			function nextSlide() {
-			const activeSlides = document.querySelector('.slider-section.active .slides');
-			if (!activeSlides) return;
-			const totalSlides = activeSlides.children.length;
-			currentIndex = (currentIndex + 1) % totalSlides;
-			updateSlide();
-			}
-			
-			function prevSlide() {
-			const activeSlides = document.querySelector('.slider-section.active .slides');
-			if (!activeSlides) return;
-			const totalSlides = activeSlides.children.length;
-			currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
-			updateSlide();
-			}
-			
-			const countdownEl = document.getElementById("countdown");
-			const countdownMobileEl = document.getElementById("countdown-mobile");
-			const weddingDate = new Date("2026-07-04T21:00:00").getTime();
-			
-			function updateCountdown() {
-			const now = new Date().getTime();
-			const distance = weddingDate - now;
-			
-			if (distance < 0) {
-			countdownEl.innerHTML = "🎉 C'est le grand jour ! 🎊";
-			countdownMobileEl.innerHTML = "🎉 C'est le grand jour ! 🎊";
-			return;
-			}
-			
-			const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-			const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-			const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-			const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-			
-			const formattedHours = String(hours).padStart(2, '0');
-			const formattedMinutes = String(minutes).padStart(2, '0');
-			const formattedSeconds = String(seconds).padStart(2, '0');
-			
-			countdownEl.innerHTML = `<i class="bi bi-hourglass-split"></i> ${days}j ${formattedHours}h ${formattedMinutes}m ${formattedSeconds}s`;
-			countdownMobileEl.innerHTML = `
-			${days} jours<br>
-			${formattedHours} heures<br>
-			${formattedMinutes} minutes<br>
-			${formattedSeconds} secondes`;
-			}
-			
-			setInterval(updateCountdown, 1000);
-			updateCountdown();
-			
-			document.querySelector('header .active').innerHTML = `<strong>Duo</strong>`;
-			function initLeafletMap() {
-			// Initialisation de la carte centrée sur la position de Google Maps
-			const map = L.map('map').setView([36.1596653, 9.2668632], 12);
-			
-			// Charger les tuiles OpenStreetMap
-			L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors',
-			maxZoom: 19
-			}).addTo(map);
-			
-			// Marqueurs
-			// L.marker([36.234494, 9.200618]).addTo(map)
-			//   .bindPopup("<div style='background-color: #ADD8E6; padding: 5px;'><b>Ferid le marié</b></div>");
-			// Définir une icône personnalisée pour Sarra
-			var sarraIcon = L.icon({
-			iconUrl: 'icone.sarra.pt.png',
-			iconSize: [40, 40],       // largeur, hauteur
-			iconAnchor: [16, 32],     // centre en bas
-			popupAnchor: [0, -32]     // popup au-dessus
-			});
-			// Définir une icône personnalisée pour Ferid
-			var feridIcon = L.icon({
-			iconUrl: 'icone.ferid.pt.png',
-			iconSize: [40, 40],       // largeur, hauteur
-			iconAnchor: [16, 32],     // centre en bas
-			popupAnchor: [0, -32]     // popup au-dessus
-			});
-			// Définir une icône personnalisée pour mariage
-			var mariageIcon = L.icon({
-			iconUrl: 'duo.heart.png',
-			iconSize: [60, 60],       // largeur, hauteur
-			iconAnchor: [16, 32],     // centre en bas
-			popupAnchor: [0, -32]     // popup au-dessus
-			});
-			// Ajouter le marqueur avec l'icône personnalisée et le popup stylisé
-			L.marker([36.097083, 9.383750], { icon: sarraIcon }).addTo(map)
-			.bindPopup("<div style='background-color: #FFC0CB; padding: 5px; border-radius: 5px;'><b>Sarra la mariée</b></div>");
-			L.marker([36.234494, 9.200618], { icon: feridIcon }).addTo(map)
-			.bindPopup("<div style='background-color: #FFC0CB; padding: 5px; border-radius: 5px;'><b>Ferid le marié</b></div>");
-			L.marker([36.087528, 9.373667], { icon: mariageIcon }).addTo(map)
-			.bindPopup("<div style='background-color: #90EE90; padding: 5px;'><b>Salle des fêtes HANNIBAL</b></div>");
-			}
-			
-			let flipped = false;
-			const icon = document.getElementById("mobhour");
-			
-			setInterval(() => {
-			flipped = !flipped;
-			icon.style.transform = flipped ? 'scaleY(-1)' : 'scaleY(1)';
-			}, 5000);
-		</script>
-		<script src="préparatifs.js"></script>
+<script>
+  let currentIndex = 0;
+  let mapInitialized = false;
+
+  function showSection(button) {
+    const sectionId = button.getAttribute("data-section");
+    const sectionName = button.textContent.trim();
+
+    document.querySelectorAll('.slider-section').forEach(section => {
+      section.classList.remove('active');
+    });
+
+    const activeSection = document.getElementById(sectionId);
+    activeSection.classList.add('active');
+
+    document.querySelector('header .active').innerHTML = `<strong>${sectionName}</strong>`;
+
+    currentIndex = 0;
+    updateSlide();
+
+    // Charger la carte si c'est la section "Cartes"
+    if (sectionId === "sectionMap" && !mapInitialized) {
+      initLeafletMap();
+      mapInitialized = true;
+    }
+
+    // Charger le tableau si c'est la section "Préparatifs"
+    if (sectionId === "Préparatifs" && !activeSection.dataset.loaded) {
+      activeSection.dataset.loaded = "true"; // Marquer comme chargé
+
+      // Si la fonction loadTableFromSheet existe, on l'appelle
+      if (typeof loadTableFromSheet === 'function') {
+        loadTableFromSheet();
+      } else {
+        console.warn("Fonction loadTableFromSheet non trouvée. Vérifiez préparatifs.js.");
+        alert("Erreur : Impossible de charger le tableau. Vérifiez que préparatifs.js est bien chargé.");
+      }
+    }
+  }
+
+  function updateSlide() {
+    const activeSlides = document.querySelector('.slider-section.active .slides');
+    if (!activeSlides) return;
+    activeSlides.style.transform = `translateX(-${currentIndex * 100}%)`;
+  }
+
+  function nextSlide() {
+    const activeSlides = document.querySelector('.slider-section.active .slides');
+    if (!activeSlides) return;
+    const totalSlides = activeSlides.children.length;
+    currentIndex = (currentIndex + 1) % totalSlides;
+    updateSlide();
+  }
+
+  function prevSlide() {
+    const activeSlides = document.querySelector('.slider-section.active .slides');
+    if (!activeSlides) return;
+    const totalSlides = activeSlides.children.length;
+    currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+    updateSlide();
+  }
+
+  const countdownEl = document.getElementById("countdown");
+  const countdownMobileEl = document.getElementById("countdown-mobile");
+  const weddingDate = new Date("2026-07-04T21:00:00").getTime();
+
+  function updateCountdown() {
+    const now = new Date().getTime();
+    const distance = weddingDate - now;
+
+    if (distance < 0) {
+      countdownEl.innerHTML = "🎉 C'est le grand jour ! 🎊";
+      countdownMobileEl.innerHTML = "🎉 C'est le grand jour ! 🎊";
+      return;
+    }
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    const formattedHours = String(hours).padStart(2, '0');
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(seconds).padStart(2, '0');
+
+    countdownEl.innerHTML = `<i class="bi bi-hourglass-split"></i> ${days}j ${formattedHours}h ${formattedMinutes}m ${formattedSeconds}s`;
+    countdownMobileEl.innerHTML = `
+      ${days} jours<br>
+      ${formattedHours} heures<br>
+      ${formattedMinutes} minutes<br>
+      ${formattedSeconds} secondes`;
+  }
+
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
+
+  document.querySelector('header .active').innerHTML = `<strong>Duo</strong>`;
+
+  function initLeafletMap() {
+    const map = L.map('map').setView([36.1596653, 9.2668632], 12);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright " target="_blank">OpenStreetMap</a> contributors',
+      maxZoom: 19
+    }).addTo(map);
+
+    var sarraIcon = L.icon({
+      iconUrl: 'icone.sarra.pt.png',
+      iconSize: [40, 40],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    });
+
+    var feridIcon = L.icon({
+      iconUrl: 'icone.ferid.pt.png',
+      iconSize: [40, 40],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    });
+
+    var mariageIcon = L.icon({
+      iconUrl: 'duo.heart.png',
+      iconSize: [60, 60],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    });
+
+    L.marker([36.097083, 9.383750], { icon: sarraIcon }).addTo(map)
+      .bindPopup("<div style='background-color: #FFC0CB; padding: 5px; border-radius: 5px;'><b>Sarra la mariée</b></div>");
+
+    L.marker([36.234494, 9.200618], { icon: feridIcon }).addTo(map)
+      .bindPopup("<div style='background-color: #FFC0CB; padding: 5px; border-radius: 5px;'><b>Ferid le marié</b></div>");
+
+    L.marker([36.087528, 9.373667], { icon: mariageIcon }).addTo(map)
+      .bindPopup("<div style='background-color: #90EE90; padding: 5px;'><b>Salle des fêtes HANNIBAL</b></div>");
+  }
+
+  let flipped = false;
+  const icon = document.getElementById("mobhour");
+
+  setInterval(() => {
+    flipped = !flipped;
+    icon.style.transform = flipped ? 'scaleY(-1)' : 'scaleY(1)';
+  }, 5000);
+</script>
+
+<!-- Chargement du script externe pour le tableau -->
+<script src="préparatifs.js"></script>
 	</body>
 </html>
