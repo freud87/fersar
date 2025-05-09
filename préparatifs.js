@@ -41,20 +41,14 @@ function renderEditableTable(data) {
     <table id="dataTable">
       <thead>
         <tr>
-          <th>Eléments</th>
-          <th>Coté administratif</th>
-          <th>Coûts</th>
-          <th>Part Sarra</th>
-          <th>Part Ferid</th>
-          <th>Acompte Sarra</th>
-          <th>Acompte Ferid</th>
-          <th>Restant</th>
+          ${data[0].map(title => `<th>${escapeHtml(title)}</th>`).join('')}
           <th>Action</th>
         </tr>
       </thead>
       <tbody>`;
 
-  data.forEach((row, index) => {
+  // Commencer à partir de la deuxième ligne : data.slice(1)
+  data.slice(1).forEach((row, index) => {
     html += `<tr>`;
     for (let i = 0; i < row.length; i++) {
       html += `<td><input type="text" value="${escapeHtml(row[i])}" onchange="markDirty()"/></td>`;
