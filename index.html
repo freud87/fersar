@@ -102,16 +102,6 @@
 				width: 100%;
 				height: 100%;
 			}
-			table, th, td {
-				border: 1px solid black;
-				border-collapse: collapse;
-			}
-			th, td {
-				padding: 8px;
-			}
-			td[contenteditable="true"] {
-				background-color: #f0f8ff;
-			}
 			#Préparatifs button {
 				margin: 10px 0;
 			}
@@ -136,6 +126,25 @@
 			}
 			.next {
 				right: 10px;
+			}
+			.save-warning {
+				color: red;
+				display: none;
+				font-weight: bold;
+				margin: 10px 0;
+			}
+			table {
+				border-collapse: collapse;
+				width: 100%;
+				margin-top: 10px;
+			}
+			th, td {
+				border: 1px solid #999;
+				padding: 6px;
+			}
+			input[type="text"] {
+				width: 100%;
+				box-sizing: border-box;
 			}
 			.countdown-group {
 				display: none;
@@ -239,26 +248,10 @@
 			<div id="map"></div>
 		</section>
 		<section id="Préparatifs" class="slider-section">
-			<button onclick="addRow()">Ajouter une ligne</button>
-			<button onclick="saveTable()">Enregistrer</button>
-			<p id="sauver">Vous devez sauvegarder les modifications</p>
-			<table id="editableTable">
-				<thead>
-					<tr>
-						<th>Eléments</th>
-						<th>Coté administratif</th>
-						<th>Coûts</th>
-						<th>Part Sarra</th>
-						<th>Part Ferid</th>
-						<th>Acompte Sarra</th>
-						<th>Acompte Ferid</th>
-						<th>Restant</th>
-					</tr>
-				</thead>
-				<tbody>
-				<!-- Les lignes seront chargées ici -->
-				</tbody>
-			</table>
+			<button id="addRowBtn">➕ Ajouter une ligne</button>
+			<button id="saveBtn">💾 Enregistrer</button>
+			<p class="save-warning" id="saveWarning">⚠️ Vous devez sauvegarder les modifications.</p>
+			<div id="tableContainer"></div>
 		</section>
 		<button class="nav-button prev" onclick="prevSlide()">
 			<i class="bi bi-arrow-left-circle-fill"></i>
