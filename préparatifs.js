@@ -119,3 +119,40 @@ function escapeHtml(text) {
   div.textContent = text;
   return div.innerHTML;
 }
+document.getElementById("saveBtn")?.addEventListener("click", async () => {
+  const rows = document.querySelectorAll("#dataTable tbody tr");
+  const newData = [];
+
+  rows.forEach(row => {
+    const cells = row.querySelectorAll("input");
+    const rowData = Array.from(cells).map(cell => cell.value.trim());
+    newData.push(rowData);
+  });
+
+  // Ajouter la ligne d'en-tête au début
+  const headers = Array.from(document.querySelectorAll("#dataTable thead th"))
+    .slice(0, -1) // exclure "Action"
+    .map(th => th.textContent.trim());
+  const finalData = [headers, ...newData];
+
+  const url = `https://script.google.com/macros/s/${scriptId}/exec?action=write`;
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      body: JSON.stringify({ data: finalData })
+    });
+
+    const result = await res.json();
+    if (result.status === "success") {
+      alert("✅ Données enregistrées avec succès !");
+      document.getElementById("saveWarning").style.display = "none";
+    } else {
+      alert("❌ Une erreur est survenue lors de l'enregistrement.");
+    }
+  } catch (err) {
+    console.error("Erreur réseau :", err);
+    alert("⚠️ Impossible d’enregistrer les données. Vérifiez votre connexion.");
+  }
+});
+
