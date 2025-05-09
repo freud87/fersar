@@ -102,8 +102,25 @@
 				width: 100%;
 				height: 100%;
 			}
-			#Préparatifs button {
-				margin: 10px 0;
+			.tableicons {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				gap: 1rem;
+				margin-bottom: 1rem;
+			}
+			.tableicons button {
+				background-color: #f8f9fa;
+				border: 1px solid;
+				padding: 0.5rem 1rem;
+				border-radius: 8px;
+				font-size: 1rem;
+				font-wheight: bold;
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+				transition: background-color 0.3s, box-shadow 0.3s;
 			}
 			#sauver { display: none; }
 			.nav-button {
@@ -130,21 +147,23 @@
 			.save-warning {
 				color: red;
 				display: none;
-				font-weight: bold;
-				margin: 10px 0;
+				background-color: #f8f9fa;
+				border: 1px solid;
+				padding: 0.5rem 1rem;
+				border-radius: 8px;
+				font-size: 1rem;
+				/*display: flex;
+				align-items: center;*/
+				gap: 0.5rem;
+				box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+				transition: background-color 0.3s, box-shadow 0.3s;
 			}
-			table {
-				border-collapse: collapse;
+			#tableContainer td input {
 				width: 100%;
-				margin-top: 10px;
-			}
-			th, td {
-				border: 1px solid #999;
-				padding: 6px;
-			}
-			input[type="text"] {
-				width: 100%;
-				box-sizing: border-box;
+				box-sizing: border-box; /* Pour inclure padding et border dans la largeur */
+				padding: 4px;
+				border: 1px solid #ccc;
+				border-radius: 4px;
 			}
 			.countdown-group {
 				display: none;
@@ -248,9 +267,11 @@
 			<div id="map"></div>
 		</section>
 		<section id="Préparatifs" class="slider-section">
-			<button id="addRowBtn">➕ Ajouter une ligne</button>
-			<button id="saveBtn">💾 Enregistrer</button>
-			<p class="save-warning" id="saveWarning">⚠️ Vous devez sauvegarder les modifications.</p>
+			<div class="tableicons">
+				<button id="addRowBtn"><i class="bi bi-plus-square"></i> Ajouter une ligne</button>
+				<button id="saveBtn"><i class="bi bi-floppy"></i> Enregistrer</button>
+				<p class="save-warning" id="saveWarning"><i class="bi bi-exclamation-triangle"></i> Vous devez sauvegarder les modifications.</p>
+			</div>
 			<div id="tableContainer"></div>
 		</section>
 		<button class="nav-button prev" onclick="prevSlide()">
@@ -302,6 +323,13 @@
         alert("Erreur : Impossible de charger le tableau. Vérifiez que préparatifs.js est bien chargé.");
       }
     }
+		// Masquer les boutons de navigation pour certaines sections
+		const navButtons = document.querySelectorAll('.nav-button');
+		if (sectionId === "Préparatifs" || sectionId === "sectionMap") {
+		navButtons.forEach(btn => btn.style.display = "none");
+		} else {
+		navButtons.forEach(btn => btn.style.display = "inline-flex");
+		}
   }
 
   function updateSlide() {
