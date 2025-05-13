@@ -3,7 +3,8 @@ const gistId = "87a8d16dfce5286aabd4496177b7e92b";
 const filename = "preparatifs.json";
 
 // ⚠️ Ton token GitHub personnel (NE JAMAIS partager publiquement)
-const token = "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"; // Remplace par le tien si nécessaire
+// Meilleure pratique: charger depuis une variable d'environnement ou une invite
+const token = "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"; // À remplacer par le tien si nécessaire
 
 // Colonnes du tableau
 const colonnes = [
@@ -23,22 +24,31 @@ let currentData = [];
 async function fetchData() {
   try {
     const res = await fetch(`https://api.github.com/gists/${gistId}`);
+    if (!res.ok) throw new Error(`Erreur HTTP: ${res.status}`);
+    
     const gist = await res.json();
 
-    if (!gist.files[filename]) throw new Error(`Fichier "${filename}" introuvable dans le Gist.`);
+    if (!gist.files || !gist.files[filename]) {
+      throw new Error(`Fichier "${filename}" introuvable dans le Gist.`);
+    }
 
     const content = gist.files[filename].content;
     currentData = JSON.parse(content);
     renderTable(currentData);
   } catch (err) {
-    console.error("Erreur : ", err);
-    alert("Erreur : Impossible de charger le tableau. Vérifiez que preparatifs.json existe.");
+    console.error("Erreur lors du chargement:", err);
+    alert(`Erreur : Impossible de charger le tableau. ${err.message}`);
   }
 }
 
 // 🔵 Afficher le tableau
 function renderTable(data) {
   const container = document.getElementById("tableContainer");
+  if (!container) {
+    console.error("Element tableContainer introuvable");
+    return;
+  }
+
   const table = document.createElement("table");
   table.style.borderCollapse = "collapse";
   table.style.width = "100%";
@@ -63,16 +73,24 @@ function renderTable(data) {
       td.style.padding = "4px";
 
       const input = document.createElement("input");
-      input.type = col.key.includes("cout") || col.key.includes("part") || col.key.includes("acompte") || col.key === "restant" ? "number" : "text";
+      input.type = ["cout", "partSarra", "partFerid", "acompteSarra", "acompteFerid", "restant"].includes(col.key) 
+        ? "number" 
+        : "text";
       input.value = item[col.key] ?? "";
       input.style.width = "100%";
+      input.min = "0";
 
       input.addEventListener("input", () => {
-        currentData[rowIndex][col.key] = input.type === "number" ? parseFloat(input.value) || 0 : input.value;
+        // Mise à jour de la valeur
+        currentData[rowIndex][col.key] = input.type === "number" 
+          ? parseFloat(input.value) || 0 
+          : input.value;
+
+        // Recalcul du restant si un champ financier est modifié
         if (["cout", "partSarra", "partFerid", "acompteSarra", "acompteFerid"].includes(col.key)) {
           const d = currentData[rowIndex];
-          d.restant = d.cout - (d.partSarra + d.partFerid + d.acompteSarra + d.acompteFerid);
-          renderTable(currentData); // rafraîchit le tableau
+          d.restant = Math.max(0, d.cout - (d.partSarra + d.partFerid + d.acompteSarra + d.acompteFerid));
+          renderTable(currentData);
         }
       });
 
@@ -88,6 +106,11 @@ function renderTable(data) {
 
 // 🟢 Sauvegarder dans le Gist
 async function saveData() {
+  if (!token || token === "xxxxxxxxxxxxxxxxxxxx") {
+    alert("❌ Token GitHub non configuré. Veuillez configurer un token valide.");
+    return;
+  }
+
   try {
     const updatedContent = JSON.stringify(currentData, null, 2);
 
@@ -95,7 +118,8 @@ async function saveData() {
       method: "PATCH",
       headers: {
         "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Accept": "application/vnd.github.v3+json"
       },
       body: JSON.stringify({
         files: {
@@ -106,17 +130,17 @@ async function saveData() {
       })
     });
 
-    if (res.ok) {
-      alert("✅ Données sauvegardées !");
-    } else {
-      const msg = await res.text();
-      alert("❌ Erreur de sauvegarde :\n" + msg);
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.message || `Erreur HTTP: ${res.status}`);
     }
+
+    alert("✅ Données sauvegardées !");
   } catch (err) {
-    console.error("Erreur :", err);
-    alert("❌ Échec de la sauvegarde.");
+    console.error("Erreur lors de la sauvegarde:", err);
+    alert(`❌ Échec de la sauvegarde: ${err.message}`);
   }
 }
 
 // 🔄 Lancer au démarrage
-fetchData();
+document.addEventListener('DOMContentLoaded', fetchData);
