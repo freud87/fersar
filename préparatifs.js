@@ -1,7 +1,11 @@
+// ⚠️ Variables de configuration
 const gistId = "87a8d16dfce5286aabd4496177b7e92b";
 const filename = "preparatifs.json";
-const token = "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"; // ⚠️ Ne jamais exposer ton token publiquement !
 
+// ⚠️ Ton token GitHub personnel (NE JAMAIS partager publiquement)
+const token = "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"; // Remplace par le tien si nécessaire
+
+// Colonnes du tableau
 const colonnes = [
   { label: "Éléments", key: "element" },
   { label: "Coté administratif", key: "admin" },
@@ -15,30 +19,31 @@ const colonnes = [
 
 let currentData = [];
 
+// 🟡 Charger les données depuis le Gist
 async function fetchData() {
   try {
-    const response = await fetch(`https://api.github.com/gists/${gistId}`);
-    const gist = await response.json();
+    const res = await fetch(`https://api.github.com/gists/${gistId}`);
+    const gist = await res.json();
 
-    if (!gist.files[filename]) {
-      throw new Error(`Fichier "${filename}" non trouvé dans le Gist`);
-    }
+    if (!gist.files[filename]) throw new Error(`Fichier "${filename}" introuvable dans le Gist.`);
 
     const content = gist.files[filename].content;
     currentData = JSON.parse(content);
     renderTable(currentData);
-  } catch (error) {
-    console.error("Erreur lors de la récupération du Gist :", error);
-    alert("❌ Erreur de chargement du fichier JSON depuis le Gist.");
+  } catch (err) {
+    console.error("Erreur : ", err);
+    alert("Erreur : Impossible de charger le tableau. Vérifiez que preparatifs.json existe.");
   }
 }
 
+// 🔵 Afficher le tableau
 function renderTable(data) {
   const container = document.getElementById("tableContainer");
   const table = document.createElement("table");
   table.style.borderCollapse = "collapse";
   table.style.width = "100%";
 
+  // En-tête
   const header = document.createElement("tr");
   colonnes.forEach(col => {
     const th = document.createElement("th");
@@ -49,6 +54,7 @@ function renderTable(data) {
   });
   table.appendChild(header);
 
+  // Données
   data.forEach((item, rowIndex) => {
     const row = document.createElement("tr");
     colonnes.forEach(col => {
@@ -58,16 +64,15 @@ function renderTable(data) {
 
       const input = document.createElement("input");
       input.type = col.key.includes("cout") || col.key.includes("part") || col.key.includes("acompte") || col.key === "restant" ? "number" : "text";
-      input.value = item[col.key] !== undefined ? item[col.key] : "";
+      input.value = item[col.key] ?? "";
       input.style.width = "100%";
 
       input.addEventListener("input", () => {
         currentData[rowIndex][col.key] = input.type === "number" ? parseFloat(input.value) || 0 : input.value;
-
         if (["cout", "partSarra", "partFerid", "acompteSarra", "acompteFerid"].includes(col.key)) {
           const d = currentData[rowIndex];
           d.restant = d.cout - (d.partSarra + d.partFerid + d.acompteSarra + d.acompteFerid);
-          renderTable(currentData); // Rafraîchir
+          renderTable(currentData); // rafraîchit le tableau
         }
       });
 
@@ -81,6 +86,7 @@ function renderTable(data) {
   container.appendChild(table);
 }
 
+// 🟢 Sauvegarder dans le Gist
 async function saveData() {
   try {
     const updatedContent = JSON.stringify(currentData, null, 2);
@@ -101,16 +107,16 @@ async function saveData() {
     });
 
     if (res.ok) {
-      alert("✅ Données sauvegardées dans le Gist !");
+      alert("✅ Données sauvegardées !");
     } else {
-      const err = await res.text();
-      alert("❌ Erreur lors de la sauvegarde :\n" + err);
+      const msg = await res.text();
+      alert("❌ Erreur de sauvegarde :\n" + msg);
     }
   } catch (err) {
-    console.error("Erreur de sauvegarde :", err);
-    alert("❌ Une erreur est survenue.");
+    console.error("Erreur :", err);
+    alert("❌ Échec de la sauvegarde.");
   }
 }
 
-// Appel initial
+// 🔄 Lancer au démarrage
 fetchData();
