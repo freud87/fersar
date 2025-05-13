@@ -319,18 +319,7 @@
       mapInitialized = true;
     }
 
-    // Charger le tableau si c'est la section "Préparatifs"
-    if (sectionId === "Préparatifs" && !activeSection.dataset.loaded) {
-      activeSection.dataset.loaded = "true"; // Marquer comme chargé
-
-      // Si la fonction loadTableFromSheet existe, on l'appelle
-      if (typeof loadTableFromSheet === 'function') {
-        loadTableFromSheet();
-      } else {
-        console.warn("Fonction loadTableFromSheet non trouvée. Vérifiez préparatifs.js.");
-        alert("Erreur : Impossible de charger le tableau. Vérifiez que préparatifs.js est bien chargé.");
-      }
-    }
+    
 		// Masquer les boutons de navigation pour certaines sections
 		const navButtons = document.querySelectorAll('.nav-button');
 		if (sectionId === "Préparatifs" || sectionId === "sectionMap") {
