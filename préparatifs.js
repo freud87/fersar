@@ -1,10 +1,11 @@
+
+
 // ⚠️ Variables de configuration
 const gistId = "87a8d16dfce5286aabd4496177b7e92b";
 const filename = "preparatifs.json";
 
 // ⚠️ Ton token GitHub personnel (NE JAMAIS partager publiquement)
-// Meilleure pratique: charger depuis une variable d'environnement ou une invite
-const token = "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"; // À remplacer par le tien si nécessaire
+const token = "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"; // À remplacer par le tien
 
 // Colonnes du tableau
 const colonnes = [
@@ -23,7 +24,7 @@ let currentData = [];
 // 🟡 Charger les données depuis le Gist
 async function fetchData() {
   try {
-    const res = await fetch(`https://api.github.com/gists/${gistId}`);
+    const res = await fetch(`https://api.github.com/gists/ ${gistId}`);
     if (!res.ok) throw new Error(`Erreur HTTP: ${res.status}`);
     
     const gist = await res.json();
@@ -89,8 +90,14 @@ function renderTable(data) {
         // Recalcul du restant si un champ financier est modifié
         if (["cout", "partSarra", "partFerid", "acompteSarra", "acompteFerid"].includes(col.key)) {
           const d = currentData[rowIndex];
-          d.restant = Math.max(0, d.cout - (d.partSarra + d.partFerid + d.acompteSarra + d.acompteFerid));
-          renderTable(currentData);
+          d.restant = Math.max(0,
+            (parseFloat(d.cout) || 0)
+            - ((parseFloat(d.partSarra) || 0)
+              + (parseFloat(d.partFerid) || 0)
+              + (parseFloat(d.acompteSarra) || 0)
+              + (parseFloat(d.acompteFerid) || 0))
+          );
+          renderTable(currentData); // Peut être optimisé pour mettre à jour qu'une ligne
         }
       });
 
@@ -114,7 +121,7 @@ async function saveData() {
   try {
     const updatedContent = JSON.stringify(currentData, null, 2);
 
-    const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+    const res = await fetch(`https://api.github.com/gists/ ${gistId}`, {
       method: "PATCH",
       headers: {
         "Authorization": `Bearer ${token}`,
