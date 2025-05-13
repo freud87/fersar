@@ -1,5 +1,5 @@
 const gistId = "87a8d16dfce5286aabd4496177b7e92b";
-const filename = "preparatifs.json";
+const filename = "https://gist.githubusercontent.com/freud87/87a8d16dfce5286aabd4496177b7e92b/raw/preparatifs.json";
 const token = "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";
 
 const colonnes = [
