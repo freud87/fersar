@@ -15,10 +15,10 @@ function populateTable(data) {
   data.forEach((row, i) => {
     const tr = document.createElement('tr');
     row.forEach(cell => {
-      const td = document.createElement(i === 0 ? 'th' : 'td');
-      td.contentEditable = i !== 0; // headers non éditables
-      td.textContent = cell;
-      tr.appendChild(td);
+      const cellEl = document.createElement(i === 0 ? 'th' : 'td');
+      cellEl.contentEditable = i !== 0;
+      cellEl.textContent = cell || '';
+      tr.appendChild(cellEl);
     });
     table.appendChild(tr);
   });
