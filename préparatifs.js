@@ -1,4 +1,3 @@
-
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxqcIzurBYiE8oggJ2NF-z35zLHEHl9WuAWRpnbyuoKOoBUzW51LDh4rkCR8X1bBTS5/exec';
 
 async function fetchData() {
@@ -25,6 +24,19 @@ function populateTable(data) {
 
   container.innerHTML = ''; // reset
   container.appendChild(table);
+
+  enableEditTracking(); // Activer suivi modifications
+}
+
+function enableEditTracking() {
+  const table = document.querySelector('#tableContainer table');
+  const cells = table.querySelectorAll('td');
+
+  cells.forEach(cell => {
+    cell.addEventListener('input', () => {
+      document.getElementById('saveWarning').style.display = 'block';
+    });
+  });
 }
 
 async function saveData() {
@@ -44,6 +56,7 @@ async function saveData() {
 }
 
 document.getElementById('saveBtn').addEventListener('click', saveData);
+
 window.addEventListener('load', fetchData);
 
 document.getElementById('addRowBtn').addEventListener('click', () => {
@@ -56,6 +69,11 @@ document.getElementById('addRowBtn').addEventListener('click', () => {
     const cell = newRow.insertCell();
     cell.contentEditable = true;
     cell.textContent = '';
+
+    // Activer suivi sur nouvelle cellule
+    cell.addEventListener('input', () => {
+      document.getElementById('saveWarning').style.display = 'block';
+    });
   }
 
   document.getElementById('saveWarning').style.display = 'block';
