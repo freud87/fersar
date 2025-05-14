@@ -41,9 +41,14 @@ function enableEditTracking() {
 
 async function saveData() {
   const table = document.querySelector('#tableContainer table');
+  if (!table) return; // Si le tableau n'existe pas, on arrête l'exécution
+
   const data = Array.from(table.rows).map(row =>
     Array.from(row.cells).map(cell => cell.textContent)
   );
+
+  // Log des données pour vérifier leur bonne récupération
+  console.log("Données à sauvegarder:", data);
 
   const res = await fetch(SHEET_URL, {
     method: 'POST',
@@ -51,9 +56,17 @@ async function saveData() {
     headers: { 'Content-Type': 'application/json' }
   });
 
-  if (res.ok) alert('Données enregistrées avec succès.');
-  else alert('Erreur lors de l’enregistrement.');
+  // Log de la réponse pour comprendre l'erreur
+  if (res.ok) {
+    console.log('Données envoyées avec succès');
+    alert('Données enregistrées avec succès.');
+  } else {
+    const errorDetails = await res.text();
+    console.error('Erreur lors de l’enregistrement:', errorDetails);
+    alert('Erreur lors de l’enregistrement.');
+  }
 }
+
 
 document.getElementById('saveBtn').addEventListener('click', saveData);
 
