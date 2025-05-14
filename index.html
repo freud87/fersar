@@ -159,20 +159,40 @@
 				box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 				transition: background-color 0.3s, box-shadow 0.3s;
 			}
-			#tableContainer {
-				overflow-x: auto;
-				background: #fff;
-				padding: 1em;
-				border-radius: 8px;
-				box-shadow: 0 0 10px rgba(0,0,0,0.1);
-			}
-			#tableContainer td input {
-				width: 100%;
-				box-sizing: border-box; /* Pour inclure padding et border dans la largeur */
-				padding: 4px;
-				border: 1px solid #ccc;
-				border-radius: 4px;
-			}
+			table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  }
+
+  th {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    text-align: left;
+    font-weight: 600;
+  }
+
+  td {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+  }
+
+  td input {
+    width: 100%;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  td input:focus {
+    border-color: #007bff;
+    outline: none;
+    background-color: #f0f8ff;
+  }
 			.countdown-group {
 				display: none;
 				background: #fff;
