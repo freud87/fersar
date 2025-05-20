@@ -2,11 +2,12 @@ const supabaseUrl = 'https://zhzeokjekgtgtsofxeyq.supabase.co';
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoemVva2pla2d0Z3Rzb2Z4ZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NDQ0NTUsImV4cCI6MjA2MzIyMDQ1NX0.pu2UpCW3HuA0b68_HmiXyehNSLCn0pOHU6WuzklOlKw';
   const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-  async function loadData() {
-    const { data, error } = await supabase.from('preparatifs').select('*');
+  const columns = ['element', 'administratif', 'couts', 'part_sarra', 'part_ferid', 'acompte_sarra', 'acompte_ferid', 'restant'];
 
+  async function loadData() {
+    const { data, error } = await supabase.from('depenses').select('*');
     if (error) {
-      console.error('Erreur lors du chargement :', error.message);
+      console.error('Erreur de chargement :', error.message);
       return;
     }
 
@@ -14,69 +15,69 @@ const supabaseUrl = 'https://zhzeokjekgtgtsofxeyq.supabase.co';
     container.innerHTML = '';
 
     const table = document.createElement('table');
-    table.innerHTML = `
-      <thead>
-        <tr>
-          <th>Élément</th>
-          <th>Description</th>
-          <th>Coût</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    `;
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    columns.forEach(col => {
+      const th = document.createElement('th');
+      th.textContent = col.replace('_', ' ').toUpperCase();
+      headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
 
-    const tbody = table.querySelector('tbody');
+    const tbody = document.createElement('tbody');
     data.forEach(row => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td contenteditable="true">${row.element || ''}</td>
-        <td contenteditable="true">${row.description || ''}</td>
-        <td contenteditable="true">${row.cout || ''}</td>
-      `;
+      columns.forEach(col => {
+        const td = document.createElement('td');
+        td.contentEditable = true;
+        td.textContent = row[col] || '';
+        tr.appendChild(td);
+      });
       tbody.appendChild(tr);
     });
 
+    table.appendChild(tbody);
     container.appendChild(table);
   }
 
   document.getElementById('addRowBtn').addEventListener('click', () => {
     const table = document.querySelector('#tableContainer table tbody');
     const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td contenteditable="true"></td>
-      <td contenteditable="true"></td>
-      <td contenteditable="true"></td>
-    `;
+    columns.forEach(() => {
+      const td = document.createElement('td');
+      td.contentEditable = true;
+      td.textContent = '';
+      tr.appendChild(td);
+    });
     table.appendChild(tr);
     document.getElementById('saveWarning').style.display = 'block';
   });
 
-  async function saveData() {
+  document.getElementById('saveBtn').addEventListener('click', async () => {
     const rows = document.querySelectorAll('#tableContainer table tbody tr');
     const newData = [];
 
     rows.forEach(row => {
       const cells = row.querySelectorAll('td');
-      const item = {
-        element: cells[0].textContent.trim(),
-        description: cells[1].textContent.trim(),
-        cout: parseFloat(cells[2].textContent.trim()) || 0,
-      };
-      newData.push(item);
+      const rowData = {};
+      columns.forEach((col, i) => {
+        const text = cells[i].textContent.trim();
+        rowData[col] = isNaN(text) ? text : parseFloat(text);
+      });
+      newData.push(rowData);
     });
 
-    // Supprimer les anciennes données (si tu veux garder, utilise UPDATE/UPSERT au lieu)
-    await supabase.from('preparatifs').delete().neq('id', 0);
+    await supabase.from('depenses').delete().neq('id', 0);
 
-    const { error } = await supabase.from('preparatifs').insert(newData);
-
+    const { error } = await supabase.from('depenses').insert(newData);
     if (error) {
       console.error('Erreur d’enregistrement :', error.message);
     } else {
       document.getElementById('saveWarning').style.display = 'none';
       alert('Données enregistrées avec succès !');
-      loadData(); // Recharge les données
+      loadData();
     }
-  }
+  });
 
   window.onload = loadData;
