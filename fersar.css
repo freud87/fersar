@@ -171,19 +171,19 @@
 			}
 				
 			#tableContainer td {
-        padding: 8px;
-        border-bottom: 1px solid #eee;
-        font-size: 16px;
-        text-align: right;
-      }
-      
-      /* Alignement personnalisé par colonne */
-      #tableContainer td:nth-child(1) {
-        text-align: left; /* colonne "element" */
-      }
-      #tableContainer td:nth-child(2) {
-        text-align: center; /* colonne "administratif" */
-      }
+			        padding: 8px;
+			        border-bottom: 1px solid #eee;
+			        font-size: 16px;
+			        text-align: right;
+			}
+			      
+			      /* Alignement personnalisé par colonne */
+			      #tableContainer td:nth-child(2) {
+			        text-align: left; /* colonne "element" */
+			}
+			      #tableContainer td:nth-child(3) {
+			        text-align: center; /* colonne "administratif" */
+			}
 				
 			#tableContainer td input {
 				    width: 100%;
