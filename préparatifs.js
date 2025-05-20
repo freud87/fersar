@@ -1,93 +1,82 @@
-const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxqcIzurBYiE8oggJ2NF-z35zLHEHl9WuAWRpnbyuoKOoBUzW51LDh4rkCR8X1bBTS5/exec';
+const supabaseUrl = 'https://zhzeokjekgtgtsofxeyq.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoemVva2pla2d0Z3Rzb2Z4ZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NDQ0NTUsImV4cCI6MjA2MzIyMDQ1NX0.pu2UpCW3HuA0b68_HmiXyehNSLCn0pOHU6WuzklOlKw';
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-async function fetchData() {
-  const res = await fetch(SHEET_URL);
-  const data = await res.json();
-  populateTable(data);
-}
+  async function loadData() {
+    const { data, error } = await supabase.from('preparatifs').select('*');
 
-function populateTable(data) {
-  const container = document.getElementById('tableContainer');
-  const table = document.createElement('table');
-  table.classList.add('data-table');
+    if (error) {
+      console.error('Erreur lors du chargement :', error.message);
+      return;
+    }
 
-  data.forEach((row, i) => {
+    const container = document.getElementById('tableContainer');
+    container.innerHTML = '';
+
+    const table = document.createElement('table');
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>Élément</th>
+          <th>Description</th>
+          <th>Coût</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    `;
+
+    const tbody = table.querySelector('tbody');
+    data.forEach(row => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td contenteditable="true">${row.element || ''}</td>
+        <td contenteditable="true">${row.description || ''}</td>
+        <td contenteditable="true">${row.cout || ''}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    container.appendChild(table);
+  }
+
+  document.getElementById('addRowBtn').addEventListener('click', () => {
+    const table = document.querySelector('#tableContainer table tbody');
     const tr = document.createElement('tr');
-    row.forEach(cell => {
-      const cellEl = document.createElement(i === 0 ? 'th' : 'td');
-      cellEl.contentEditable = i !== 0;
-      cellEl.textContent = cell || '';
-      tr.appendChild(cellEl);
-    });
+    tr.innerHTML = `
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+    `;
     table.appendChild(tr);
+    document.getElementById('saveWarning').style.display = 'block';
   });
 
-  container.innerHTML = ''; // reset
-  container.appendChild(table);
+  async function saveData() {
+    const rows = document.querySelectorAll('#tableContainer table tbody tr');
+    const newData = [];
 
-  enableEditTracking(); // Activer suivi modifications
-}
-
-function enableEditTracking() {
-  const table = document.querySelector('#tableContainer table');
-  const cells = table.querySelectorAll('td');
-
-  cells.forEach(cell => {
-    cell.addEventListener('input', () => {
-      document.getElementById('saveWarning').style.display = 'block';
+    rows.forEach(row => {
+      const cells = row.querySelectorAll('td');
+      const item = {
+        element: cells[0].textContent.trim(),
+        description: cells[1].textContent.trim(),
+        cout: parseFloat(cells[2].textContent.trim()) || 0,
+      };
+      newData.push(item);
     });
-  });
-}
 
-async function saveData() {
-  const table = document.querySelector('#tableContainer table');
-  if (!table) return; // Si le tableau n'existe pas, on arrête l'exécution
+    // Supprimer les anciennes données (si tu veux garder, utilise UPDATE/UPSERT au lieu)
+    await supabase.from('preparatifs').delete().neq('id', 0);
 
-  const data = Array.from(table.rows).map(row =>
-    Array.from(row.cells).map(cell => cell.textContent)
-  );
+    const { error } = await supabase.from('preparatifs').insert(newData);
 
-  // Log des données pour vérifier leur bonne récupération
-  console.log("Données à sauvegarder:", data);
-
-  const res = await fetch(SHEET_URL, {
-    method: 'POST',
-    body: JSON.stringify(data),
-    headers: { 'Content-Type': 'application/json' }
-  });
-
-  // Log de la réponse pour comprendre l'erreur
-  if (res.ok) {
-    console.log('Données envoyées avec succès');
-    alert('Données enregistrées avec succès.');
-  } else {
-    const errorDetails = await res.text();
-    console.error('Erreur lors de l’enregistrement:', errorDetails);
-    alert('Erreur lors de l’enregistrement.');
-  }
-}
-
-
-document.getElementById('saveBtn').addEventListener('click', saveData);
-
-window.addEventListener('load', fetchData);
-
-document.getElementById('addRowBtn').addEventListener('click', () => {
-  const table = document.querySelector('#tableContainer table');
-  if (!table) return;
-
-  const newRow = table.insertRow();
-  const cols = table.rows[0].cells.length;
-  for (let i = 0; i < cols; i++) {
-    const cell = newRow.insertCell();
-    cell.contentEditable = true;
-    cell.textContent = '';
-
-    // Activer suivi sur nouvelle cellule
-    cell.addEventListener('input', () => {
-      document.getElementById('saveWarning').style.display = 'block';
-    });
+    if (error) {
+      console.error('Erreur d’enregistrement :', error.message);
+    } else {
+      document.getElementById('saveWarning').style.display = 'none';
+      alert('Données enregistrées avec succès !');
+      loadData(); // Recharge les données
+    }
   }
 
-  document.getElementById('saveWarning').style.display = 'block';
-});
+  window.onload = loadData;
