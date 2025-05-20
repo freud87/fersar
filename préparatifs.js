@@ -55,7 +55,14 @@
         td.textContent = row[col] || '';
         if (col === 'id') td.style.display = 'none';
         tr.appendChild(td);
-
+//////////////////////
+       td.addEventListener('keydown', (e) => {
+       if (e.key === 'Enter') {
+         e.preventDefault();
+         td.blur();
+       }
+     });
+////////////////////////////
         if (['couts', 'acompte_ferid', 'acompte_sarra'].includes(col)) {
           td.addEventListener('input', () => {
             updateRestantForRow(tr);
