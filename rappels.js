@@ -60,32 +60,21 @@ async function loadTasks() {
   container.appendChild(table);
 }
 
-// Sélecteur d’e-mail dépendant de destinataire
+// remplissage d’e-mail dépendant de destinataire
 function setupMailSelector(td, tr) {
-  //const select = document.createElement('select');
-  //select.innerHTML = `
-    //<option value="">-- Choisir --</option>
-    //<option value="sarrakharroubi30@gmail.com">Sarra</option>
-    //<option value="feridfreud@gmail.com">Ferid</option>
-  //`;
-
-  // Lecture de la valeur de la cellule destinataire
   const destIndex = taskColumns.indexOf('destinataire');
   const destCell = tr.cells[destIndex];
   const destinataire = destCell?.textContent.trim().toLowerCase();
 
-  // Pré-remplissage
-  if (destinataire === 'sarra') select.value = 'sarrakharroubi30@gmail.com';
-  else if (destinataire === 'ferid') select.value = 'feridfreud@gmail.com';
-
-  select.addEventListener('change', () => {
-    td.textContent = select.value;
-  });
-
-  td.innerHTML = '';
-  td.appendChild(select);
-  select.focus();
+  if (destinataire === 'sarra') {
+    td.textContent = 'sarrakharroubi30@gmail.com';
+  } else if (destinataire === 'ferid') {
+    td.textContent = 'feridfreud@gmail.com';
+  } else {
+    td.textContent = '';
+  }
 }
+
 
 // Ajouter une ligne vide
 document.getElementById('addtask').addEventListener('click', () => {
