@@ -149,21 +149,21 @@
 				box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 				transition: background-color 0.3s, box-shadow 0.3s;
 			}
-			#tableContainer {
+			.donneesbase {
 				    /*background: #fff;*/
 				    padding: 20px;
 				    border-radius: 12px;
 				    box-shadow: 0 0 10px rgba(0,0,0,0.05);
 				    overflow-x: auto;
 			}	
-			#tableContainer table {
+			.donneesbase table {
 				    width: 100%;
 				    border-collapse: collapse;
 				    background-color: #fff;
 				    border-radius: 12px;
 				    overflow: hidden;
 			}	
-			#tableContainer th {
+			.donneesbase th {
 				    background-color: #007bff;
 				    color: white;
 				    padding: 10px;
@@ -171,7 +171,7 @@
 				    font-weight: 600;
 			}
 				
-			#tableContainer td {
+			.donneesbase td {
 			        padding: 8px;
 			        border-bottom: 1px solid #eee;
 			        font-size: 16px;
@@ -179,14 +179,14 @@
 			}
 			      
 			      /* Alignement personnalisé par colonne */
-			      #tableContainer td:nth-child(2) {
+			      .donneesbase td:nth-child(2) {
 			        text-align: left; /* colonne "element" */
 			}
-			      #tableContainer td:nth-child(3) {
+			      .donneesbase td:nth-child(3) {
 			        text-align: center; /* colonne "administratif" */
 			}
 				
-			#tableContainer td input {
+			.donneesbase td input {
 				    width: 100%;
 				    padding: 6px;
 				    border: 1px solid #ccc;
@@ -194,7 +194,7 @@
 				    font-size: 14px;
 			}
 				
-			#tableContainer td input:focus {
+			.donneesbase td input:focus {
 				    border-color: #007bff;
 				    outline: none;
 				    background-color: #f0f8ff;
