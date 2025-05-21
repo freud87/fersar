@@ -36,12 +36,19 @@ async function loadTasks() {
       td.textContent = row[col] || '';
       if (col === 'id') td.style.display = 'none';
       tr.appendChild(td);
+      
       td.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          td.blur();
-        }
-      });
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        td.blur();
+      }
+    });
+    
+    // Spécial pour le champ mail : clic pour afficher un select
+    if (col === 'mail') {
+      td.addEventListener('click', () => setupMailSelector(td));
+    }
+      
     });
     tbody.appendChild(tr);
   });
@@ -49,7 +56,24 @@ async function loadTasks() {
   table.appendChild(tbody);
   container.appendChild(table);
 }
+//choisir entre mail de Ferid et mail de Sarra
+function setupMailSelector(td) {
+  const select = document.createElement('select');
+  select.innerHTML = `
+    <option value="">-- Choisir --</option>
+    <option value="sarrakharroubi30@gmail.com">Sarra</option>
+    <option value="feridfreud@gmail.com">Ferid</option>
+  `;
 
+  select.addEventListener('change', () => {
+    td.textContent = select.value;
+  });
+
+  td.innerHTML = ''; // vider la cellule
+  td.appendChild(select);
+  select.focus();
+}
+//ajouter un rappel
 document.getElementById('addtask').addEventListener('click', () => {
   const tbody = document.querySelector('#tasksContainer table tbody');
   const tr = document.createElement('tr');
@@ -63,7 +87,7 @@ document.getElementById('addtask').addEventListener('click', () => {
   tbody.appendChild(tr);
   document.getElementById('savetaskWarning').style.display = 'block';
 });
-
+//enregistrer les modifications
 document.getElementById('savetask').addEventListener('click', async () => {
   const rows = document.querySelectorAll('#tasksContainer table tbody tr');
   const newRows = [], existingRows = [];
@@ -124,5 +148,5 @@ document.getElementById('savetask').addEventListener('click', async () => {
   loadTasks();
 });
 
-
+//au chargement de la page importer les données
 window.addEventListener('DOMContentLoaded', loadTasks);
