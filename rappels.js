@@ -1,7 +1,7 @@
 // Configuration Supabase
-const supabaseUrl = 'https://zhzeokjekgtgtsofxeyq.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoemVva2pla2d0Z3Rzb2Z4ZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NDQ0NTUsImV4cCI6MjA2MzIyMDQ1NX0.pu2UpCW3HuA0b68_HmiXyehNSLCn0pOHU6WuzklOlKw';
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+//const supabaseUrl = 'https://zhzeokjekgtgtsofxeyq.supabase.co';
+//const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoemVva2pla2d0Z3Rzb2Z4ZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NDQ0NTUsImV4cCI6MjA2MzIyMDQ1NX0.pu2UpCW3HuA0b68_HmiXyehNSLCn0pOHU6WuzklOlKw';
+//const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 const taskColumns = ['id', 'objet', 'personne', 'telephone', 'date', 'email'];
 
