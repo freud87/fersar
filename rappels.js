@@ -32,7 +32,7 @@ async function loadTasks() {
     const tr = document.createElement('tr');
     taskColumns.forEach(col => {
       const td = document.createElement('td');
-      td.contentEditable = col !== 'id' && col !== 'mail';
+      td.contentEditable = col !== 'id';
       td.textContent = row[col] || '';
       if (col === 'id') td.style.display = 'none';
       tr.appendChild(td);
@@ -46,7 +46,7 @@ async function loadTasks() {
     
     // Spécial pour le champ mail : clic pour afficher un select
     if (col === 'mail') {
-      td.addEventListener('click', () => setupMailCheckboxes(td));
+      td.addEventListener('click', () => setupMailSelector(td));
     }
       
     });
@@ -57,54 +57,21 @@ async function loadTasks() {
   container.appendChild(table);
 }
 //choisir entre mail de Ferid et mail de Sarra
-function setupMailCheckboxes(td) {
-  const wrapper = document.createElement('div');
+function setupMailSelector(td) {
+  const select = document.createElement('select');
+  select.innerHTML = `
+    <option value="">-- Choisir --</option>
+    <option value="sarrakharroubi30@gmail.com">Sarra</option>
+    <option value="feridfreud@gmail.com">Ferid</option>
+  `;
 
-  const sarra = document.createElement('input');
-  sarra.type = 'checkbox';
-  sarra.id = 'sarra';
-  const labelSarra = document.createElement('label');
-  labelSarra.textContent = 'Sarra';
-  labelSarra.htmlFor = 'sarra';
-
-  const ferid = document.createElement('input');
-  ferid.type = 'checkbox';
-  ferid.id = 'ferid';
-  const labelFerid = document.createElement('label');
-  labelFerid.textContent = 'Ferid';
-  labelFerid.htmlFor = 'ferid';
-
-  wrapper.appendChild(sarra);
-  wrapper.appendChild(labelSarra);
-  wrapper.appendChild(document.createElement('br'));
-  wrapper.appendChild(ferid);
-  wrapper.appendChild(labelFerid);
-
-  td.innerHTML = '';
-  td.appendChild(wrapper);
-
-  // Coche automatiquement selon contenu initial
-  const content = td.dataset.originalContent || td.textContent;
-  if (content.includes('sarrakharroubi30@gmail.com')) sarra.checked = true;
-  if (content.includes('feridfreud@gmail.com')) ferid.checked = true;
-
-  const updateEmail = () => {
-    const emails = [];
-    if (sarra.checked) emails.push('sarrakharroubi30@gmail.com');
-    if (ferid.checked) emails.push('feridfreud@gmail.com');
-    td.innerHTML = emails.join('; ');
-  };
-
-  // Enregistrer lors du blur ou choix
-  [sarra, ferid].forEach(checkbox => {
-    checkbox.addEventListener('change', updateEmail);
+  select.addEventListener('change', () => {
+    td.textContent = select.value;
   });
 
-  // En cas de clic hors cellule
-  wrapper.addEventListener('blur', updateEmail, true);
-
-  // Sauvegarder contenu original au cas où
-  td.dataset.originalContent = content;
+  td.innerHTML = ''; // vider la cellule
+  td.appendChild(select);
+  select.focus();
 }
 //ajouter un rappel
 document.getElementById('addtask').addEventListener('click', () => {
