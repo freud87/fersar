@@ -30,7 +30,8 @@ async function loadTasks() {
       td.contentEditable = col !== 'id' && col !== 'envoi';
 
       if (col === 'date' && row[col]) {
-        const dateObj = new Date(row[col]);
+        // Ajoute T00:00:00 pour éviter décalage UTC
+        const dateObj = new Date(row[col] + 'T00:00:00');
         const day = String(dateObj.getDate()).padStart(2, '0');
         const month = String(dateObj.getMonth() + 1).padStart(2, '0');
         const year = dateObj.getFullYear();
@@ -59,6 +60,7 @@ async function loadTasks() {
   table.appendChild(tbody);
   container.appendChild(table);
 }
+
 
 // remplissage d’e-mail dépendant de destinataire
 function setupMailSelector(td, tr) {
