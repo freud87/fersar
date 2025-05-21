@@ -27,7 +27,18 @@ async function loadTasks() {
     const tr = document.createElement('tr');
     taskColumns.forEach(col => {
       const td = document.createElement('td');
+      /////////////////////////////
+      if (col === 'date' && row[col]) {
+      const dateObj = new Date(row[col]);
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const year = dateObj.getFullYear();
+      td.textContent = `${day}/${month}/${year}`;
+    } else {
       td.textContent = row[col] || '';
+    }
+
+      //////////////////////////////////
       if (col === 'id') td.style.display = 'none';
       td.contentEditable = col !== 'id' && col !== 'mail' && col !== 'envoi';
 
