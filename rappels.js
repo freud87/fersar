@@ -68,13 +68,32 @@ document.getElementById('savetask').addEventListener('click', async () => {
   const rows = document.querySelectorAll('#tasksContainer table tbody tr');
   const newRows = [], existingRows = [];
 
-  rows.forEach(row => {
+  for (const row of rows) {
     const cells = row.querySelectorAll('td');
     const rowData = {};
+    let hasEmptyPhone = false;
+
     taskColumns.forEach((col, i) => {
-      const text = cells[i].textContent.trim();
-      rowData[col] = text;
+      let text = cells[i].textContent.trim();
+
+      // Si telephone est vide, marquer comme erreur
+      if (col === 'telephone' && text === '') {
+        hasEmptyPhone = true;
+      }
+
+      // Corriger les champs numériques vides
+      if (['telephone', 'envoi', 'fait'].includes(col) && text === '') {
+        rowData[col] = null;
+      } else {
+        rowData[col] = text;
+      }
     });
+
+    if (hasEmptyPhone) {
+      alert("Le champ TÉLÉPHONE est obligatoire pour tous les rappels.");
+      return; // Arrête toute la fonction
+    }
+
     if (rowData.id) {
       rowData.id = parseInt(rowData.id);
       existingRows.push(rowData);
@@ -82,22 +101,28 @@ document.getElementById('savetask').addEventListener('click', async () => {
       delete rowData.id;
       newRows.push(rowData);
     }
-  });
+  }
 
+  // Mise à jour des lignes existantes
   for (const row of existingRows) {
     const { id, ...updateData } = row;
     const { error } = await supabase.from('rappels').update(updateData).eq('id', id);
     if (error) console.error(`Erreur de mise à jour pour id=${id} :`, error.message);
   }
 
+  // Insertion des nouvelles lignes
   if (newRows.length > 0) {
     const { error } = await supabase.from('rappels').insert(newRows);
-    if (error) console.error('Erreur d’insertion :', error.message);
+    if (error) {
+      console.error('Erreur d’insertion :', error.message);
+      return;
+    }
   }
 
   document.getElementById('savetaskWarning').style.display = 'none';
   alert('Rappels enregistrés avec succès !');
   loadTasks();
 });
+
 
 window.addEventListener('DOMContentLoaded', loadTasks);
