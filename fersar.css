@@ -186,7 +186,7 @@
 			        text-align: center; /* colonne "administratif" */
 			}
 			#tasksContainer td {
-			        text-align: right;
+			        text-align: left;
 			}	
 			.donneesbase td input {
 				    width: 100%;
