@@ -32,7 +32,8 @@ async function loadTasks() {
     const tr = document.createElement('tr');
     taskColumns.forEach(col => {
       const td = document.createElement('td');
-      td.contentEditable = col !== 'id';
+      //td.contentEditable = col !== 'id';
+      td.contentEditable = col !== 'id' && col !== 'envoi';
       td.textContent = row[col] || '';
       if (col === 'id') td.style.display = 'none';
       tr.appendChild(td);
