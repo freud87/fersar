@@ -27,43 +27,29 @@ async function loadTasks() {
     const tr = document.createElement('tr');
     taskColumns.forEach(col => {
       const td = document.createElement('td');
-      /////////////////////////////
+      td.contentEditable = col !== 'id' && col !== 'envoi';
+
       if (col === 'date' && row[col]) {
-      const dateObj = new Date(row[col]);
-      const day = String(dateObj.getDate()).padStart(2, '0');
-      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-      const year = dateObj.getFullYear();
-      td.textContent = `${day}/${month}/${year}`;
-    } else {
-      td.textContent = row[col] || '';
-    }
+        const dateObj = new Date(row[col]);
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const year = dateObj.getFullYear();
+        td.textContent = `${day}/${month}/${year}`;
+      } else if (col === 'mail') {
+        td.textContent = row[col] || '';
+        td.addEventListener('click', () => setupMailSelector(td, tr));
+      } else {
+        td.textContent = row[col] || '';
+      }
 
-      //////////////////////////////////
       if (col === 'id') td.style.display = 'none';
-      td.contentEditable = col !== 'id' && col !== 'mail' && col !== 'envoi';
 
-      // Empêcher validation avec Entrée
       td.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
           td.blur();
         }
       });
-
-      // Mise à jour automatique du mail si 'destinataire' change
-      if (col === 'destinataire') {
-        td.addEventListener('blur', () => {
-          const value = td.textContent.trim().toLowerCase();
-          const mailCell = tr.querySelectorAll('td')[taskColumns.indexOf('mail')];
-          if (value === 'sarra') {
-            mailCell.textContent = 'sarrakharroubi30@gmail.com';
-          } else if (value === 'ferid') {
-            mailCell.textContent = 'feridfreud@gmail.com';
-          } else {
-            mailCell.textContent = '';
-          }
-        });
-      }
 
       tr.appendChild(td);
     });
@@ -74,48 +60,49 @@ async function loadTasks() {
   container.appendChild(table);
 }
 
-// Ajouter un rappel
+// Sélecteur d’e-mail dépendant de destinataire
+function setupMailSelector(td, tr) {
+  const select = document.createElement('select');
+  select.innerHTML = `
+    <option value="">-- Choisir --</option>
+    <option value="sarrakharroubi30@gmail.com">Sarra</option>
+    <option value="feridfreud@gmail.com">Ferid</option>
+  `;
+
+  // Lecture de la valeur de la cellule destinataire
+  const destIndex = taskColumns.indexOf('destinataire');
+  const destCell = tr.cells[destIndex];
+  const destinataire = destCell?.textContent.trim().toLowerCase();
+
+  // Pré-remplissage
+  if (destinataire === 'sarra') select.value = 'sarrakharroubi30@gmail.com';
+  else if (destinataire === 'ferid') select.value = 'feridfreud@gmail.com';
+
+  select.addEventListener('change', () => {
+    td.textContent = select.value;
+  });
+
+  td.innerHTML = '';
+  td.appendChild(select);
+  select.focus();
+}
+
+// Ajouter une ligne vide
 document.getElementById('addtask').addEventListener('click', () => {
   const tbody = document.querySelector('#tasksContainer table tbody');
   const tr = document.createElement('tr');
-
   taskColumns.forEach(col => {
     const td = document.createElement('td');
+    td.contentEditable = col !== 'id';
     td.textContent = '';
     if (col === 'id') td.style.display = 'none';
-    td.contentEditable = col !== 'id' && col !== 'mail' && col !== 'envoi';
-
-    // Empêcher validation avec Entrée
-    td.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        td.blur();
-      }
-    });
-
-    // Mise à jour automatique du mail
-    if (col === 'destinataire') {
-      td.addEventListener('blur', () => {
-        const value = td.textContent.trim().toLowerCase();
-        const mailCell = tr.querySelectorAll('td')[taskColumns.indexOf('mail')];
-        if (value === 'sarra') {
-          mailCell.textContent = 'sarrakharroubi30@gmail.com';
-        } else if (value === 'ferid') {
-          mailCell.textContent = 'feridfreud@gmail.com';
-        } else {
-          mailCell.textContent = '';
-        }
-      });
-    }
-
     tr.appendChild(td);
   });
-
   tbody.appendChild(tr);
   document.getElementById('savetaskWarning').style.display = 'block';
 });
 
-// Enregistrer les rappels
+// Enregistrement des tâches
 document.getElementById('savetask').addEventListener('click', async () => {
   const rows = document.querySelectorAll('#tasksContainer table tbody tr');
   const newRows = [], existingRows = [];
@@ -128,12 +115,14 @@ document.getElementById('savetask').addEventListener('click', async () => {
     taskColumns.forEach((col, i) => {
       let text = cells[i].textContent.trim();
 
-      if (col === 'telephone' && text === '') {
-        hasEmptyPhone = true;
-      }
+      if (col === 'telephone' && text === '') hasEmptyPhone = true;
 
       if (['telephone', 'envoi', 'fait'].includes(col) && text === '') {
         rowData[col] = null;
+      } else if (col === 'date' && text.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+        // Convertir JJ/MM/AAAA en AAAA-MM-DD
+        const [jj, mm, aaaa] = text.split('/');
+        rowData[col] = `${aaaa}-${mm}-${jj}`;
       } else {
         rowData[col] = text;
       }
@@ -153,12 +142,14 @@ document.getElementById('savetask').addEventListener('click', async () => {
     }
   }
 
+  // MAJ des lignes existantes
   for (const row of existingRows) {
     const { id, ...updateData } = row;
     const { error } = await supabase.from('rappels').update(updateData).eq('id', id);
     if (error) console.error(`Erreur de mise à jour pour id=${id} :`, error.message);
   }
 
+  // Insertion des nouvelles lignes
   if (newRows.length > 0) {
     const { error } = await supabase.from('rappels').insert(newRows);
     if (error) {
@@ -172,5 +163,5 @@ document.getElementById('savetask').addEventListener('click', async () => {
   loadTasks();
 });
 
-// Charger les rappels au démarrage
+// Charger les données au démarrage
 window.addEventListener('DOMContentLoaded', loadTasks);
