@@ -116,7 +116,7 @@
     
 		// Masquer les boutons de navigation pour certaines sections
 		const navButtons = document.querySelectorAll('.nav-button');
-		if (sectionId === "Préparatifs" || sectionId === "sectionMap") {
+		if (sectionId === "tasks" || sectionId === "Préparatifs" || sectionId === "sectionMap") {
 		navButtons.forEach(btn => btn.style.display = "none");
 		} else {
 		navButtons.forEach(btn => btn.style.display = "inline-flex");
