@@ -92,14 +92,16 @@
 				width: 100%;
 				height: 100%;
 			}
-			.tableicons {
+			.tableicons
+			.taskicons {
 				display: flex;
 				flex-direction: row;
 				align-items: center;
 				gap: 1rem;
 				margin-bottom: 1rem;
 			}
-			.tableicons button {
+			.tableicons button
+			.taskicons button {
 				background-color: #f8f9fa;
 				border: 1px solid;
 				padding: 0.5rem 1rem;
