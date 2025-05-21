@@ -62,12 +62,12 @@ async function loadTasks() {
 
 // Sélecteur d’e-mail dépendant de destinataire
 function setupMailSelector(td, tr) {
-  const select = document.createElement('select');
-  select.innerHTML = `
-    <option value="">-- Choisir --</option>
-    <option value="sarrakharroubi30@gmail.com">Sarra</option>
-    <option value="feridfreud@gmail.com">Ferid</option>
-  `;
+  //const select = document.createElement('select');
+  //select.innerHTML = `
+    //<option value="">-- Choisir --</option>
+    //<option value="sarrakharroubi30@gmail.com">Sarra</option>
+    //<option value="feridfreud@gmail.com">Ferid</option>
+  //`;
 
   // Lecture de la valeur de la cellule destinataire
   const destIndex = taskColumns.indexOf('destinataire');
