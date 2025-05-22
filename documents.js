@@ -1,3 +1,31 @@
+// charger les fichiers
+async function loadFiles() {
+  const listContainer = document.querySelector('.filelist');
+  listContainer.innerHTML = ''; // vider avant de remplir
+  const { data, error } = await supabase.storage
+    .from('documents')
+    .list('uploads', { limit: 100 });
+  if (error) {
+    console.error('Erreur lors du chargement des fichiers :', error.message);
+    return;
+  }
+  for (const file of data) {
+    const filePath = `uploads/${file.name}`;
+    const { data: publicUrlData } = supabase
+      .storage
+      .from('documents')
+      .getPublicUrl(filePath);
+    const fileLink = publicUrlData.publicUrl;
+
+    const a = document.createElement('a');
+    a.href = fileLink;
+    a.textContent = file.name;
+    a.target = '_blank';
+    listContainer.appendChild(a);
+    listContainer.appendChild(document.createElement('br'));
+  }
+}
+//pretify le nom du fichier
 function sanitizeFileName(name) {
   return name
     .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -47,3 +75,8 @@ document.getElementById('fileInput').addEventListener('change', async (e) => {
 
   alert('Fichier ajouté avec succès !');
 });
+//lors du chargement
+window.addEventListener('DOMContentLoaded', () => {
+  loadFiles();
+});
+
