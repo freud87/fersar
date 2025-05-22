@@ -44,8 +44,9 @@ async function loadTasks() {
         td.addEventListener('click', () => setupMailSelector(td, tr));
       } else if (col === 'fait') {
         td.textContent = row[col] === 'Oui' ? 'Oui' : '';
+      
         const envoiValue = row['envoi'];
-        if (envoiValue !== 'Oui') {
+        if (envoiValue === 'Oui') {
           td.addEventListener('click', () => {
             td.textContent = td.textContent === 'Oui' ? '' : 'Oui';
             document.getElementById('savetaskWarning').style.display = 'block';
