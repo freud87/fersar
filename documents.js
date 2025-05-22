@@ -13,7 +13,7 @@ async function loadFiles() {
   }
 
   for (const file of data) {
-    const filePath = `uploads/${file.name}`;
+    const filePath = `${file.name}`;
     const { data: publicUrlData } = supabase
       .storage
       .from('documents')
