@@ -1,28 +1,41 @@
 // charger les fichiers
 async function loadFiles() {
   const listContainer = document.querySelector('.filelist');
-  listContainer.innerHTML = ''; // vider avant de remplir
+  listContainer.innerHTML = '';
+
   const { data, error } = await supabase.storage
     .from('documents')
     .list('uploads', { limit: 100 });
+
   if (error) {
     console.error('Erreur lors du chargement des fichiers :', error.message);
     return;
   }
+
   for (const file of data) {
     const filePath = `uploads/${file.name}`;
     const { data: publicUrlData } = supabase
       .storage
       .from('documents')
       .getPublicUrl(filePath);
+
     const fileLink = publicUrlData.publicUrl;
+
+    // Nettoyer le nom du fichier : retirer l'horodatage + remplacer _ par espaces
+    const cleanName = file.name.replace(/^\d+_/, '').replace(/_/g, ' ');
 
     const a = document.createElement('a');
     a.href = fileLink;
-    a.textContent = file.name;
+    a.textContent = cleanName;
     a.target = '_blank';
+    a.style.display = 'block';       // lien en ligne séparée
+    a.style.margin = '4px 0';        // petit espacement
+    a.style.textDecoration = 'none'; // pas de souligné
+    a.style.color = '#0077cc';       // couleur personnalisée
+    a.onmouseover = () => a.style.textDecoration = 'underline';
+    a.onmouseout = () => a.style.textDecoration = 'none';
+
     listContainer.appendChild(a);
-    listContainer.appendChild(document.createElement('br'));
   }
 }
 //pretify le nom du fichier
