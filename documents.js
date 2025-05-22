@@ -45,7 +45,7 @@ async function loadFiles() {
         const iframe = document.createElement('iframe');
         iframe.src = fileLink;
         iframe.width = '100%';
-        iframe.height = 'auto';
+        iframe.height = '700px';
         iframe.style.border = '1px solid #ccc';
         viewer.appendChild(iframe);
       } else if (/\.(jpe?g|png|gif|webp)$/i.test(file.name)) {
