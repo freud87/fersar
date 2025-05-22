@@ -13,24 +13,27 @@ async function loadTasks() {
   const table = document.createElement('table');
   const thead = document.createElement('thead');
   const headerRow = document.createElement('tr');
+
   taskColumns.forEach(col => {
     const th = document.createElement('th');
     th.textContent = col.toUpperCase();
     if (col === 'id') th.style.display = 'none';
     headerRow.appendChild(th);
   });
+
   thead.appendChild(headerRow);
   table.appendChild(thead);
 
   const tbody = document.createElement('tbody');
+
   data.forEach(row => {
     const tr = document.createElement('tr');
     taskColumns.forEach(col => {
       const td = document.createElement('td');
-      td.contentEditable = col !== 'id' && col !== 'envoi';
+      const isEditable = !['id', 'mail', 'envoi'].includes(col);
+      td.contentEditable = isEditable;
 
       if (col === 'date' && row[col]) {
-        // Ajoute T00:00:00 pour éviter décalage UTC
         const dateObj = new Date(row[col] + 'T00:00:00');
         const day = String(dateObj.getDate()).padStart(2, '0');
         const month = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -52,6 +55,13 @@ async function loadTasks() {
         }
       });
 
+      // Afficher le warning si une cellule éditable est modifiée
+      if (isEditable) {
+        td.addEventListener('input', () => {
+          document.getElementById('savetaskWarning').style.display = 'block';
+        });
+      }
+
       tr.appendChild(td);
     });
     tbody.appendChild(tr);
@@ -60,7 +70,6 @@ async function loadTasks() {
   table.appendChild(tbody);
   container.appendChild(table);
 }
-
 
 // remplissage d’e-mail dépendant de destinataire
 function setupMailSelector(td, tr) {
@@ -77,16 +86,20 @@ function setupMailSelector(td, tr) {
   }
 }
 
-
 // Ajouter une ligne vide
 document.getElementById('addtask').addEventListener('click', () => {
   const tbody = document.querySelector('#tasksContainer table tbody');
   const tr = document.createElement('tr');
   taskColumns.forEach(col => {
     const td = document.createElement('td');
-    td.contentEditable = col !== 'id';
+    td.contentEditable = !['id', 'mail', 'envoi'].includes(col);
     td.textContent = '';
     if (col === 'id') td.style.display = 'none';
+    if (!['id', 'mail', 'envoi'].includes(col)) {
+      td.addEventListener('input', () => {
+        document.getElementById('savetaskWarning').style.display = 'block';
+      });
+    }
     tr.appendChild(td);
   });
   tbody.appendChild(tr);
@@ -111,7 +124,6 @@ document.getElementById('savetask').addEventListener('click', async () => {
       if (['telephone', 'envoi', 'fait'].includes(col) && text === '') {
         rowData[col] = null;
       } else if (col === 'date' && text.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
-        // Convertir JJ/MM/AAAA en AAAA-MM-DD
         const [jj, mm, aaaa] = text.split('/');
         rowData[col] = `${aaaa}-${mm}-${jj}`;
       } else {
