@@ -72,8 +72,12 @@
 		<section id="documents" class="slider-section">
 			<div class="actionicons">
 				<button id="addfile"><i class="bi bi-plus-square"></i> Ajouter un fichier</button>
+				<input type="file" id="fileInput" style="display: none;" />
 			</div>
-			<div class="donneesbase" id="fileContainer"></div>
+			<div class="donneesbase" id="fileContainer">
+				<div class="filelist"></div>
+				<div class="fileshow"></div>
+			</div>
 		</section>
 		<section id="tasks" class="slider-section">
 			<div class="actionicons">
@@ -115,7 +119,7 @@
 		}
 		// Masquer les boutons de navigation pour certaines sections
 		const navButtons = document.querySelectorAll('.nav-button');
-		if (sectionId === "tasks" || sectionId === "Préparatifs" || sectionId === "sectionMap") {
+		if (sectionId === "documents" || sectionId === "tasks" || sectionId === "Préparatifs" || sectionId === "sectionMap") {
 			navButtons.forEach(btn => btn.style.display = "none");
 		} else {
 			navButtons.forEach(btn => btn.style.display = "inline-flex");
