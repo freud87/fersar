@@ -186,8 +186,13 @@
 			        text-align: center; /* colonne "administratif" */
 			}
 			#tasksContainer td {
+			        text-align: center;
+			}
+			#tasksContainer td:nth-child(2),
+			#tasksContainer td:nth-child(3),
+			#tasksContainer td:nth-child(7) {
 			        text-align: left;
-			}	
+			}
 			.donneesbase td input {
 				    width: 100%;
 				    padding: 6px;
