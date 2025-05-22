@@ -42,15 +42,17 @@ async function loadTasks() {
       } else if (col === 'mail') {
         td.textContent = row[col] || '';
         td.addEventListener('click', () => setupMailSelector(td, tr));
-      else if (col === 'fait') {
+      } else if (col === 'fait') {
         td.textContent = row[col] === 'Oui' ? 'Oui' : '';
-      
         const envoiValue = row['envoi'];
         if (envoiValue !== 'Oui') {
           td.addEventListener('click', () => {
             td.textContent = td.textContent === 'Oui' ? '' : 'Oui';
             document.getElementById('savetaskWarning').style.display = 'block';
           });
+        } else {
+          td.style.color = 'gray';
+          td.style.cursor = 'not-allowed';
         }
       } else {
         td.textContent = row[col] || '';
@@ -65,7 +67,6 @@ async function loadTasks() {
         }
       });
 
-      // Afficher le warning si une cellule éditable est modifiée
       if (isEditable) {
         td.addEventListener('input', () => {
           document.getElementById('savetaskWarning').style.display = 'block';
@@ -105,11 +106,20 @@ document.getElementById('addtask').addEventListener('click', () => {
     td.contentEditable = !['id', 'mail', 'envoi'].includes(col);
     td.textContent = '';
     if (col === 'id') td.style.display = 'none';
+
     if (!['id', 'mail', 'envoi'].includes(col)) {
       td.addEventListener('input', () => {
         document.getElementById('savetaskWarning').style.display = 'block';
       });
     }
+
+    if (col === 'fait') {
+      td.addEventListener('click', () => {
+        td.textContent = td.textContent === 'Oui' ? '' : 'Oui';
+        document.getElementById('savetaskWarning').style.display = 'block';
+      });
+    }
+
     tr.appendChild(td);
   });
   tbody.appendChild(tr);
@@ -131,7 +141,9 @@ document.getElementById('savetask').addEventListener('click', async () => {
 
       if (col === 'telephone' && text === '') hasEmptyPhone = true;
 
-      if (['telephone', 'envoi', 'fait'].includes(col) && text === '') {
+      if (col === 'fait') {
+        rowData[col] = text === 'Oui' ? 'Oui' : '';
+      } else if (['telephone', 'envoi'].includes(col) && text === '') {
         rowData[col] = null;
       } else if (col === 'date' && text.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
         const [jj, mm, aaaa] = text.split('/');
@@ -155,14 +167,12 @@ document.getElementById('savetask').addEventListener('click', async () => {
     }
   }
 
-  // MAJ des lignes existantes
   for (const row of existingRows) {
     const { id, ...updateData } = row;
     const { error } = await supabase.from('rappels').update(updateData).eq('id', id);
     if (error) console.error(`Erreur de mise à jour pour id=${id} :`, error.message);
   }
 
-  // Insertion des nouvelles lignes
   if (newRows.length > 0) {
     const { error } = await supabase.from('rappels').insert(newRows);
     if (error) {
