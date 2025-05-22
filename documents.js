@@ -5,7 +5,7 @@ async function loadFiles() {
 
   const { data, error } = await supabase.storage
     .from('documents')
-    .list('uploads', { limit: 100 });
+    .list('', { limit: 100 });
 
   if (error) {
     console.error('Erreur lors du chargement des fichiers :', error.message);
@@ -54,7 +54,7 @@ document.getElementById('fileInput').addEventListener('change', async (e) => {
   if (!file) return;
 
   const sanitizedName = sanitizeFileName(file.name);
-  const filePath = `uploads/${Date.now()}_${sanitizedName}`;
+  const filePath = `${Date.now()}_${sanitizedName}`;
 
   // Upload vers Supabase Storage
   const { data, error } = await supabase.storage
