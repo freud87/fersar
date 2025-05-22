@@ -180,7 +180,7 @@
 			      
 			/* Alignement personnalisé par colonne */
 			#tableContainer td:nth-child(2) {
-			        text-align: left; /* colonne "element" */
+				text-align: left; /* colonne "element" */
 			}
 			#tableContainer td:nth-child(3) {
 			        text-align: center; /* colonne "administratif" */
@@ -194,17 +194,21 @@
 			        text-align: left;
 			}
 			.donneesbase td input {
-				    width: 100%;
-				    padding: 6px;
-				    border: 1px solid #ccc;
-				    border-radius: 4px;
-				    font-size: 14px;
+				width: 100%;
+				padding: 6px;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+				font-size: 14px;
 			}
 				
 			.donneesbase td input:focus {
 				    border-color: #007bff;
 				    outline: none;
 				    background-color: #f0f8ff;
+			}
+			#fileContainer {
+				display: flex;
+				flex-direction: row;
 			}
 			.countdown-group {
 				display: none;
