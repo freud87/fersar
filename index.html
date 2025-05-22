@@ -88,76 +88,73 @@
 			<div class="countdown-mobile" id="countdown-mobile"></div>
 		</div>
 <script>
-  let currentIndex = 0;
-  let mapInitialized = false;
-
-  function showSection(button) {
-    const sectionId = button.getAttribute("data-section");
-    const sectionName = button.textContent.trim();
-
-    document.querySelectorAll('.slider-section').forEach(section => {
-      section.classList.remove('active');
-    });
-
-    const activeSection = document.getElementById(sectionId);
-    activeSection.classList.add('active');
-
-    document.querySelector('header .active').innerHTML = `<strong>${sectionName}</strong>`;
-
-    currentIndex = 0;
-    updateSlide();
-
-    // Charger la carte si c'est la section "Cartes"
-    if (sectionId === "sectionMap" && !mapInitialized) {
-      initLeafletMap();
-      mapInitialized = true;
-    }
-
-    
+	let currentIndex = 0;
+	let mapInitialized = false;
+	function showSection(button) {
+		const sectionId = button.getAttribute("data-section");
+		const sectionName = button.textContent.trim();
+		document.querySelectorAll('.slider-section').forEach(section => {
+			section.classList.remove('active');
+		});
+		const activeSection = document.getElementById(sectionId);
+		activeSection.classList.add('active');
+		document.querySelector('header .active').innerHTML = `<strong>${sectionName}</strong>`;
+		currentIndex = 0;
+		updateSlide();
+		// Charger la carte si c'est la section "Cartes"
+		if (sectionId === "sectionMap" && !mapInitialized) {
+			initLeafletMap();
+			mapInitialized = true;
+		}
 		// Masquer les boutons de navigation pour certaines sections
 		const navButtons = document.querySelectorAll('.nav-button');
 		if (sectionId === "tasks" || sectionId === "Préparatifs" || sectionId === "sectionMap") {
-		navButtons.forEach(btn => btn.style.display = "none");
+			navButtons.forEach(btn => btn.style.display = "none");
 		} else {
-		navButtons.forEach(btn => btn.style.display = "inline-flex");
+			navButtons.forEach(btn => btn.style.display = "inline-flex");
 		}
-  }
-
-  function updateSlide() {
-    const activeSlides = document.querySelector('.slider-section.active .slides');
-    if (!activeSlides) return;
-    activeSlides.style.transform = `translateX(-${currentIndex * 100}%)`;
-  }
-
-  function nextSlide() {
-    const activeSlides = document.querySelector('.slider-section.active .slides');
-    if (!activeSlides) return;
-    const totalSlides = activeSlides.children.length;
-    currentIndex = (currentIndex + 1) % totalSlides;
-    updateSlide();
-  }
-
-  function prevSlide() {
-    const activeSlides = document.querySelector('.slider-section.active .slides');
-    if (!activeSlides) return;
-    const totalSlides = activeSlides.children.length;
-    currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
-    updateSlide();
-  }
-
-  const countdownEl = document.getElementById("countdown");
-  const countdownMobileEl = document.getElementById("countdown-mobile");
-  const weddingDate = new Date("2026-07-04T21:00:00").getTime();
-
-  function updateCountdown() {
-    const now = new Date().getTime();
-    const distance = weddingDate - now;
-
-    if (distance < 0) {
-      countdownEl.innerHTML = "🎉 C'est le grand jour ! 🎊";
-      countdownMobileEl.innerHTML = "🎉 C'est le grand jour ! 🎊";
-      return;
-    }
+	}
+	function updateSlide() {
+		const activeSlides = document.querySelector('.slider-section.active .slides');
+		if (!activeSlides) return;
+		activeSlides.style.transform = `translateX(-${currentIndex * 100}%)`;
+	}
+	function nextSlide() {
+		const activeSlides = document.querySelector('.slider-section.active .slides');
+		if (!activeSlides) return;
+		const totalSlides = activeSlides.children.length;
+		currentIndex = (currentIndex + 1) % totalSlides;
+		updateSlide();
+	}
+	function prevSlide() {
+		const activeSlides = document.querySelector('.slider-section.active .slides');
+		if (!activeSlides) return;
+		const totalSlides = activeSlides.children.length;
+		currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+		updateSlide();
+	}
+	//passer d'une photo à l'autre par flèches
+	document.addEventListener('keydown', function(event) {
+		const activeSection = document.querySelector('.slider-section.active');
+		const isSlideSection = activeSection && activeSection.querySelector('.slides');
+		if (!isSlideSection) return; // Ne pas activer dans "Préparatifs", "Rappels", ou "Cartes"
+		if (event.key === "ArrowRight") {
+			nextSlide();
+		} else if (event.key === "ArrowLeft") {
+			prevSlide();
+		}
+	});
+	const countdownEl = document.getElementById("countdown");
+	const countdownMobileEl = document.getElementById("countdown-mobile");
+	const weddingDate = new Date("2026-07-04T21:00:00").getTime();
+	function updateCountdown() {
+		const now = new Date().getTime();
+		const distance = weddingDate - now;
+		if (distance < 0) {
+			countdownEl.innerHTML = "🎉 C'est le grand jour ! 🎊";
+			countdownMobileEl.innerHTML = "🎉 C'est le grand jour ! 🎊";
+			return;
+		}
 
     const days = Math.floor(distance / (1000 * 60 * 60 * 24));
     const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
