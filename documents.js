@@ -10,7 +10,7 @@ document.getElementById('fileInput').addEventListener('change', async (e) => {
 
   // Upload vers Supabase Storage
   const { data, error } = await supabase.storage
-    .from('ton-bucket')
+    .from('documents')
     .upload(filePath, file, {
       cacheControl: '3600',
       upsert: true
@@ -24,7 +24,7 @@ document.getElementById('fileInput').addEventListener('change', async (e) => {
   // Récupération de l'URL publique
   const { data: publicUrl } = supabase
     .storage
-    .from('ton-bucket')
+    .from('documents')
     .getPublicUrl(filePath);
 
   const fileLink = publicUrl.publicUrl;
