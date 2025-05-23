@@ -31,11 +31,8 @@ async function loadTasks() {
     const tr = document.createElement('tr');
     taskColumns.forEach(col => {
       const td = document.createElement('td');
-      /////////////
-      td.addEventListener('focus', () => {
-  lastFocusedCell = td;
-});
-      //////////////
+      td.addEventListener('focus', () => lastFocusedCell = td);
+
       const isEditable = !['id', 'mail', 'envoi'].includes(col);
       td.contentEditable = isEditable;
 
@@ -45,14 +42,17 @@ async function loadTasks() {
         const month = String(dateObj.getMonth() + 1).padStart(2, '0');
         const year = dateObj.getFullYear();
         td.textContent = `${day}/${month}/${year}`;
-      } else if (col === 'mail') {
+      } else {
         td.textContent = row[col] || '';
+      }
+
+      if (col === 'mail') {
         td.addEventListener('click', () => setupMailSelector(td, tr));
-      } else if (col === 'fait') {
+      }
+
+      if (col === 'fait') {
         td.textContent = row[col] === 'Oui' ? 'Oui' : '';
-      
-        const envoiValue = row['envoi'];
-        if (envoiValue === 'Oui') {
+        if (row['envoi'] === 'Oui') {
           td.addEventListener('click', () => {
             td.textContent = td.textContent === 'Oui' ? '' : 'Oui';
             document.getElementById('savetaskWarning').style.display = 'block';
@@ -61,8 +61,20 @@ async function loadTasks() {
           td.style.color = 'gray';
           td.style.cursor = 'not-allowed';
         }
-      } else {
-        td.textContent = row[col] || '';
+      }
+
+      if (col === 'destinataire') {
+        td.addEventListener('click', () => {
+          const current = td.textContent.trim().toLowerCase();
+          if (current === '') {
+            td.textContent = 'Ferid';
+          } else if (current === 'ferid') {
+            td.textContent = 'Sarra';
+          } else if (current === 'sarra') {
+            td.textContent = '';
+          }
+          document.getElementById('savetaskWarning').style.display = 'block';
+        });
       }
 
       if (col === 'id') td.style.display = 'none';
@@ -89,7 +101,6 @@ async function loadTasks() {
   container.appendChild(table);
 }
 
-// remplissage d’e-mail dépendant de destinataire
 function setupMailSelector(td, tr) {
   const destIndex = taskColumns.indexOf('destinataire');
   const destCell = tr.cells[destIndex];
@@ -108,6 +119,7 @@ function setupMailSelector(td, tr) {
 document.getElementById('addtask').addEventListener('click', () => {
   const tbody = document.querySelector('#tasksContainer table tbody');
   const tr = document.createElement('tr');
+
   taskColumns.forEach(col => {
     const td = document.createElement('td');
     td.contentEditable = !['id', 'mail', 'envoi'].includes(col);
@@ -127,8 +139,23 @@ document.getElementById('addtask').addEventListener('click', () => {
       });
     }
 
+    if (col === 'destinataire') {
+      td.addEventListener('click', () => {
+        const current = td.textContent.trim().toLowerCase();
+        if (current === '') {
+          td.textContent = 'Ferid';
+        } else if (current === 'ferid') {
+          td.textContent = 'Sarra';
+        } else if (current === 'sarra') {
+          td.textContent = '';
+        }
+        document.getElementById('savetaskWarning').style.display = 'block';
+      });
+    }
+
     tr.appendChild(td);
   });
+
   tbody.appendChild(tr);
   document.getElementById('savetaskWarning').style.display = 'block';
 });
@@ -192,6 +219,7 @@ document.getElementById('savetask').addEventListener('click', async () => {
   alert('Rappels enregistrés avec succès !');
   loadTasks();
 });
+
 // Supprimer une ligne
 document.getElementById('dlttask').addEventListener('click', async () => {
   if (!lastFocusedCell || lastFocusedCell.tagName !== 'TD') {
@@ -224,5 +252,5 @@ document.getElementById('dlttask').addEventListener('click', async () => {
     loadTasks();
   }
 });
-// Charger les données au démarrage
+
 window.addEventListener('DOMContentLoaded', loadTasks);
