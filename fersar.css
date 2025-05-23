@@ -100,7 +100,8 @@ main {
 	margin-bottom: 1rem;
 }
 
-.actionicons button {
+.actionicons button,
+.actionicons2 button {
 	background-color: #f8f9fa;
 	border: 1px solid;
 	padding: 0.5rem 1rem;
