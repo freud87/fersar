@@ -47,7 +47,7 @@ async function loadTasks() {
       }
 
       if (col === 'mail') {
-        td.addEventListener('click', () => setupMailSelector(td, tr));
+        // Pas éditable, mise à jour automatique via destinataire
       }
 
       if (col === 'fait') {
@@ -72,6 +72,16 @@ async function loadTasks() {
             td.textContent = 'Sarra';
           } else if (current === 'sarra') {
             td.textContent = '';
+          }
+          // Met à jour la colonne mail correspondante automatiquement
+          const mailIndex = taskColumns.indexOf('mail');
+          const mailCell = tr.cells[mailIndex];
+          if (td.textContent.toLowerCase() === 'sarra') {
+            mailCell.textContent = 'sarrakharroubi30@gmail.com';
+          } else if (td.textContent.toLowerCase() === 'ferid') {
+            mailCell.textContent = 'feridfreud@gmail.com';
+          } else {
+            mailCell.textContent = '';
           }
           document.getElementById('savetaskWarning').style.display = 'block';
         });
@@ -99,20 +109,6 @@ async function loadTasks() {
 
   table.appendChild(tbody);
   container.appendChild(table);
-}
-
-function setupMailSelector(td, tr) {
-  const destIndex = taskColumns.indexOf('destinataire');
-  const destCell = tr.cells[destIndex];
-  const destinataire = destCell?.textContent.trim().toLowerCase();
-
-  if (destinataire === 'sarra') {
-    td.textContent = 'sarrakharroubi30@gmail.com';
-  } else if (destinataire === 'ferid') {
-    td.textContent = 'feridfreud@gmail.com';
-  } else {
-    td.textContent = '';
-  }
 }
 
 // Ajouter une ligne vide
@@ -148,6 +144,16 @@ document.getElementById('addtask').addEventListener('click', () => {
           td.textContent = 'Sarra';
         } else if (current === 'sarra') {
           td.textContent = '';
+        }
+        // Met à jour mail automatiquement aussi
+        const mailIndex = taskColumns.indexOf('mail');
+        const mailCell = tr.cells[mailIndex];
+        if (td.textContent.toLowerCase() === 'sarra') {
+          mailCell.textContent = 'sarrakharroubi30@gmail.com';
+        } else if (td.textContent.toLowerCase() === 'ferid') {
+          mailCell.textContent = 'feridfreud@gmail.com';
+        } else {
+          mailCell.textContent = '';
         }
         document.getElementById('savetaskWarning').style.display = 'block';
       });
