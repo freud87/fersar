@@ -186,6 +186,33 @@ document.getElementById('savetask').addEventListener('click', async () => {
   alert('Rappels enregistrés avec succès !');
   loadTasks();
 });
+// Supprimer une ligne
+document.getElementById('dlttask').addEventListener('click', async () => {
+  const activeElement = document.activeElement;
+  if (!activeElement || activeElement.tagName !== 'TD') {
+    alert('Placez le curseur dans une cellule avant de supprimer.');
+    return;
+  }
+
+  const row = activeElement.closest('tr');
+  const idCell = row.querySelector('td');
+  const id = idCell && idCell.textContent.trim();
+
+  if (!id) {
+    alert("Impossible de trouver l'ID pour cette ligne.");
+    return;
+  }
+
+  if (!confirm("Confirmez-vous la suppression de cette ligne ?")) return;
+
+  const { error } = await supabase.from('rappels').delete().eq('id', parseInt(id));
+  if (error) {
+    console.error('Erreur lors de la suppression :', error.message);
+    alert("Erreur lors de la suppression.");
+  } else {
+    loadTasks();
+  }
+});
 
 // Charger les données au démarrage
 window.addEventListener('DOMContentLoaded', loadTasks);
