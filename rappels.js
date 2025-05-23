@@ -1,3 +1,4 @@
+let lastFocusedCell = null;
 const taskColumns = ['id', 'objet', 'personne', 'telephone', 'date', 'destinataire', 'mail', 'envoi', 'fait'];
 
 async function loadTasks() {
@@ -30,6 +31,11 @@ async function loadTasks() {
     const tr = document.createElement('tr');
     taskColumns.forEach(col => {
       const td = document.createElement('td');
+      /////////////
+      td.addEventListener('focus', () => {
+  lastFocusedCell = td;
+});
+      //////////////
       const isEditable = !['id', 'mail', 'envoi'].includes(col);
       td.contentEditable = isEditable;
 
@@ -188,29 +194,28 @@ document.getElementById('savetask').addEventListener('click', async () => {
 });
 // Supprimer une ligne
 document.getElementById('dlttask').addEventListener('click', async () => {
-  const activeElement = document.activeElement;
-  // Vérifie si on est dans une cellule de tableau
-  if (!activeElement || activeElement.tagName !== 'TD') {
+  if (!lastFocusedCell || lastFocusedCell.tagName !== 'TD') {
     alert('Veuillez placer le curseur dans une cellule pour supprimer la ligne correspondante.');
     return;
   }
-  // Remonte à la ligne correspondante
-  const row = activeElement.closest('tr');
+
+  const row = lastFocusedCell.closest('tr');
   if (!row) {
     alert("Ligne non trouvée.");
     return;
   }
-  // Trouve la cellule 'id' (même si cachée)
+
   const idIndex = taskColumns.indexOf('id');
   const idCell = row.cells[idIndex];
   const id = idCell?.textContent.trim();
+
   if (!id) {
     alert("Impossible de déterminer l'identifiant de la ligne.");
     return;
   }
-  // Confirmation
+
   if (!confirm("Supprimer cette ligne ?")) return;
-  // Suppression via Supabase
+
   const { error } = await supabase.from('rappels').delete().eq('id', parseInt(id));
   if (error) {
     console.error("Erreur de suppression :", error.message);
