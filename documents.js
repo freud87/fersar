@@ -88,7 +88,7 @@ document.getElementById('fileInput').addEventListener('change', async (e) => {
   if (!file) return;
 
   const sanitizedName = sanitizeFileName(file.name);
-  const filePath = `${Date.now()}_${sanitizedName}`;
+  const filePath = `${sanitizedName}`;
 
   const { data, error } = await supabase.storage
     .from('documents')
