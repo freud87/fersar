@@ -189,30 +189,35 @@ document.getElementById('savetask').addEventListener('click', async () => {
 // Supprimer une ligne
 document.getElementById('dlttask').addEventListener('click', async () => {
   const activeElement = document.activeElement;
+  // Vérifie si on est dans une cellule de tableau
   if (!activeElement || activeElement.tagName !== 'TD') {
-    alert('Placez le curseur dans une cellule avant de supprimer.');
+    alert('Veuillez placer le curseur dans une cellule pour supprimer la ligne correspondante.');
     return;
   }
-
+  // Remonte à la ligne correspondante
   const row = activeElement.closest('tr');
-  const idCell = row.querySelector('td');
-  const id = idCell && idCell.textContent.trim();
-
-  if (!id) {
-    alert("Impossible de trouver l'ID pour cette ligne.");
+  if (!row) {
+    alert("Ligne non trouvée.");
     return;
   }
-
-  if (!confirm("Confirmez-vous la suppression de cette ligne ?")) return;
-
+  // Trouve la cellule 'id' (même si cachée)
+  const idIndex = taskColumns.indexOf('id');
+  const idCell = row.cells[idIndex];
+  const id = idCell?.textContent.trim();
+  if (!id) {
+    alert("Impossible de déterminer l'identifiant de la ligne.");
+    return;
+  }
+  // Confirmation
+  if (!confirm("Supprimer cette ligne ?")) return;
+  // Suppression via Supabase
   const { error } = await supabase.from('rappels').delete().eq('id', parseInt(id));
   if (error) {
-    console.error('Erreur lors de la suppression :', error.message);
+    console.error("Erreur de suppression :", error.message);
     alert("Erreur lors de la suppression.");
   } else {
     loadTasks();
   }
 });
-
 // Charger les données au démarrage
 window.addEventListener('DOMContentLoaded', loadTasks);
