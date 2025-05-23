@@ -229,9 +229,9 @@ main {
 .filelist {
 	width: auto;
 	margin-top: 10px;
-	border-radius: 12px;
+	border-radius: 8px;
 	box-shadow: 0 0 10px rgba(0,0,0,0.05);
-	font-size: 1.5em;
+	font-size: 1.2em;
 }
 #showfile {
 	flex: 1;
