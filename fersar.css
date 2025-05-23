@@ -208,11 +208,17 @@ main {
 	    background-color: #f0f8ff;
 }
 #documents {
-  display: flex;
   flex-direction: row;
-  height: 100%; /* ajustable selon ton besoin */
+  height: 100%;
 }
 
+.slider-section#documents {
+  display: none;
+}
+
+.slider-section#documents.active {
+  display: flex;
+}
 /* Positionnement */
 #docicons {
 	display: flex;
