@@ -1,6 +1,5 @@
-const supabaseUrl = 'https://zhzeokjekgtgtsofxeyq.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoemVva2pla2d0Z3Rzb2Z4ZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NDQ0NTUsImV4cCI6MjA2MzIyMDQ1NX0.pu2UpCW3HuA0b68_HmiXyehNSLCn0pOHU6WuzklOlKw';
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+// Remplacez cette URL par l'URL de votre application Web Google Apps Script après déploiement
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0B259VopXelzGEJ9RVKPrcZa0u5pqKRUmmRp1XY4vWuyQw0LFY8oMdeHUb9HDbi5xqQ/exec';
 
 const columns = ['id', 'element', 'administratif', 'couts', 'part_sarra', 'part_ferid', 'acompte_sarra', 'acompte_ferid', 'restant'];
 const calculables = ['couts', 'acompte_ferid', 'acompte_sarra'];
@@ -25,71 +24,74 @@ function updateRestantForRow(tr) {
   }
 }
 
+// Charger les données depuis GSheet
 async function loadData() {
-  const { data, error } = await supabase.from('depenses').select('*');
-  if (error) {
-    console.error('Erreur de chargement :', error.message);
-    return;
-  }
+  try {
+    const response = await fetch(`${SCRIPT_URL}?action=read`);
+    const data = await response.json();
 
-  const container = document.getElementById('tableContainer');
-  container.innerHTML = '';
+    const container = document.getElementById('tableContainer');
+    container.innerHTML = '';
 
-  const table = document.createElement('table');
-  const thead = document.createElement('thead');
-  const headerRow = document.createElement('tr');
-
-  columns.forEach(col => {
-    const th = document.createElement('th');
-    th.textContent = col.replace('_', ' ').toUpperCase();
-    if (col === 'id') th.style.display = 'none';
-    headerRow.appendChild(th);
-  });
-
-  thead.appendChild(headerRow);
-  table.appendChild(thead);
-
-  const tbody = document.createElement('tbody');
-
-  data.forEach(row => {
-    const tr = document.createElement('tr');
+    const table = document.createElement('table');
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
 
     columns.forEach(col => {
-      const td = document.createElement('td');
-      td.contentEditable = col !== 'id' && col !== 'restant';
-      td.textContent = row[col] || '';
-      if (col === 'id') td.style.display = 'none';
-
-      // Empêche l'ajout de retour à la ligne avec Enter
-      td.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          td.blur();
-        }
-      });
-
-      // Ajout de l'écouteur input pour toutes les cellules éditables
-      if (td.isContentEditable) {
-        td.addEventListener('input', () => {
-          if (calculables.includes(col)) {
-            updateRestantForRow(tr);
-          }
-          document.getElementById('saveWarning').style.display = 'block';
-        });
-      }
-
-      tr.appendChild(td);
+      const th = document.createElement('th');
+      th.textContent = col.replace('_', ' ').toUpperCase();
+      if (col === 'id') th.style.display = 'none';
+      headerRow.appendChild(th);
     });
 
-    tbody.appendChild(tr);
-  });
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
 
-  table.appendChild(tbody);
-  container.appendChild(table);
+    const tbody = document.createElement('tbody');
+
+    data.forEach(row => {
+      const tr = document.createElement('tr');
+
+      columns.forEach(col => {
+        const td = document.createElement('td');
+        td.contentEditable = col !== 'id' && col !== 'restant';
+        td.textContent = row[col] !== undefined && row[col] !== null ? row[col] : '';
+        if (col === 'id') td.style.display = 'none';
+
+        // Empêche l'ajout de retour à la ligne avec Enter
+        td.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            td.blur();
+          }
+        });
+
+        if (td.isContentEditable) {
+          td.addEventListener('input', () => {
+            if (calculables.includes(col)) {
+              updateRestantForRow(tr);
+            }
+            document.getElementById('saveWarning').style.display = 'block';
+          });
+        }
+
+        tr.appendChild(td);
+      });
+
+      tbody.appendChild(tr);
+    });
+
+    table.appendChild(tbody);
+    container.appendChild(table);
+  } catch (error) {
+    console.error('Erreur de chargement GSheet :', error);
+  }
 }
 
+// Ajouter une nouvelle ligne vide
 document.getElementById('addRowBtn').addEventListener('click', () => {
   const tbody = document.querySelector('#tableContainer table tbody');
+  if (!tbody) return;
   const tr = document.createElement('tr');
 
   columns.forEach(col => {
@@ -98,7 +100,6 @@ document.getElementById('addRowBtn').addEventListener('click', () => {
     td.textContent = '';
     if (col === 'id') td.style.display = 'none';
 
-    // Ajout de l'écouteur input pour les nouvelles lignes
     if (td.isContentEditable) {
       td.addEventListener('input', () => {
         if (calculables.includes(col)) {
@@ -115,46 +116,40 @@ document.getElementById('addRowBtn').addEventListener('click', () => {
   document.getElementById('saveWarning').style.display = 'block';
 });
 
+// Enregistrer (Mises à jour et Nouvelles lignes groupées)
 document.getElementById('saveBtn').addEventListener('click', async () => {
   const rows = document.querySelectorAll('#tableContainer table tbody tr');
-  const newRows = [];
-  const existingRows = [];
+  const allRowsData = [];
 
   rows.forEach(row => {
     const cells = row.querySelectorAll('td');
     const rowData = {};
     columns.forEach((col, i) => {
       const text = cells[i].textContent.trim();
-      rowData[col] = (col === 'id' || isNaN(text)) ? text : parseFloat(text);
+      rowData[col] = (col === 'id' || isNaN(text) || text === '') ? text : parseFloat(text);
     });
-
-    if (rowData.id) {
-      rowData.id = parseInt(rowData.id);
-      existingRows.push(rowData);
-    } else {
-      delete rowData.id;
-      newRows.push(rowData);
-    }
+    
+    allRowsData.push(rowData);
   });
 
-  for (const row of existingRows) {
-    const { id, ...updateData } = row;
-    const { error } = await supabase.from('depenses').update(updateData).eq('id', id);
-    if (error) {
-      console.error(`Erreur de mise à jour pour id=${id} :`, error.message);
-    }
-  }
+  try {
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors', // Évite les soucis de CORS avec Google Apps Script
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ action: 'save', data: allRowsData })
+    });
 
-  if (newRows.length > 0) {
-    const { error } = await supabase.from('depenses').insert(newRows);
-    if (error) {
-      console.error('Erreur d’insertion :', error.message);
-    }
+    document.getElementById('saveWarning').style.display = 'none';
+    alert('Données enregistrées avec succès dans Google Sheets !');
+    // On recharge après un léger délai pour laisser à Google le temps de traiter l'écriture
+    setTimeout(loadData, 1500);
+  } catch (error) {
+    console.error('Erreur lors de la sauvegarde :', error);
+    alert('Une erreur est survenue lors de la sauvegarde.');
   }
-
-  document.getElementById('saveWarning').style.display = 'none';
-  alert('Données enregistrées avec succès !');
-  loadData();
 });
 
 window.addEventListener('DOMContentLoaded', loadData);
