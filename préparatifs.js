@@ -1,7 +1,7 @@
 // Remplacez cette URL par l'URL de votre application Web Google Apps Script après déploiement
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0B259VopXelzGEJ9RVKPrcZa0u5pqKRUmmRp1XY4vWuyQw0LFY8oMdeHUb9HDbi5xqQ/exec';
 
-const columns = ['id', 'element', 'administratif', 'couts', 'part_sarra', 'part_ferid', 'acompte_sarra', 'acompte_ferid', 'restant'];
+const columns = ['element', 'administratif', 'couts', 'part_sarra', 'part_ferid', 'acompte_sarra', 'acompte_ferid', 'restant'];
 const calculables = ['couts', 'acompte_ferid', 'acompte_sarra'];
 
 function updateRestantForRow(tr) {
