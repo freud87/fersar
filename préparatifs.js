@@ -40,7 +40,6 @@ async function loadData() {
     columns.forEach(col => {
       const th = document.createElement('th');
       th.textContent = col.replace('_', ' ').toUpperCase();
-      if (col === 'id') th.style.display = 'none';
       headerRow.appendChild(th);
     });
 
@@ -54,9 +53,8 @@ async function loadData() {
 
       columns.forEach(col => {
         const td = document.createElement('td');
-        td.contentEditable = col !== 'id' && col !== 'restant';
+        td.contentEditable = col !== 'restant';
         td.textContent = row[col] !== undefined && row[col] !== null ? row[col] : '';
-        if (col === 'id') td.style.display = 'none';
 
         // Empêche l'ajout de retour à la ligne avec Enter
         td.addEventListener('keydown', (e) => {
@@ -96,9 +94,8 @@ document.getElementById('addRowBtn').addEventListener('click', () => {
 
   columns.forEach(col => {
     const td = document.createElement('td');
-    td.contentEditable = col !== 'id' && col !== 'restant';
+    td.contentEditable = col !== 'restant';
     td.textContent = '';
-    if (col === 'id') td.style.display = 'none';
 
     if (td.isContentEditable) {
       td.addEventListener('input', () => {
@@ -126,21 +123,20 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
     const rowData = {};
     columns.forEach((col, i) => {
       const text = cells[i].textContent.trim();
-      rowData[col] = (col === 'id' || isNaN(text) || text === '') ? text : parseFloat(text);
+      rowData[col] = (isNaN(text) || text === '') ? text : parseFloat(text);
     });
     
     allRowsData.push(rowData);
   });
 
   try {
-    // On envoie les données sous forme de paramètre de formulaire pour éviter les blocages CORS
     const formData = new URLSearchParams();
     formData.append('action', 'save');
     formData.append('data', JSON.stringify(allRowsData));
 
     await fetch(SCRIPT_URL, {
       method: 'POST',
-      mode: 'no-cors', // On le garde, mais cette fois-ci les données passeront dans le corps urlencoded
+      mode: 'no-cors',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
@@ -150,7 +146,6 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
     document.getElementById('saveWarning').style.display = 'none';
     alert('Données enregistrées avec succès dans Google Sheets !');
     
-    // On recharge après un léger délai pour laisser à Google le temps de traiter l'écriture
     setTimeout(loadData, 1500);
   } catch (error) {
     console.error('Erreur lors de la sauvegarde :', error);
