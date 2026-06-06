@@ -133,17 +133,23 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
   });
 
   try {
-    const response = await fetch(SCRIPT_URL, {
+    // On envoie les données sous forme de paramètre de formulaire pour éviter les blocages CORS
+    const formData = new URLSearchParams();
+    formData.append('action', 'save');
+    formData.append('data', JSON.stringify(allRowsData));
+
+    await fetch(SCRIPT_URL, {
       method: 'POST',
-      mode: 'no-cors', // Évite les soucis de CORS avec Google Apps Script
+      mode: 'no-cors', // On le garde, mais cette fois-ci les données passeront dans le corps urlencoded
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: JSON.stringify({ action: 'save', data: allRowsData })
+      body: formData.toString()
     });
 
     document.getElementById('saveWarning').style.display = 'none';
     alert('Données enregistrées avec succès dans Google Sheets !');
+    
     // On recharge après un léger délai pour laisser à Google le temps de traiter l'écriture
     setTimeout(loadData, 1500);
   } catch (error) {
