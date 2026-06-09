@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+        <title>Gestion des frais - Sarra & Ferid</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="commun.css">
+    </head>
+    <body>
+        <header>
+            <div class="headerG" style="display: flex; align-items: center; gap: 15px;">
+                <div id="logo"></div>
+                <div class="titre" style="font-size: 24px; font-weight: bold;">Sarra & Ferid</div>
+            </div>
+            <h1>
+                <i class="bi bi-clipboard2-check"></i> Préparatifs
+            </h1>
+            <div class="countdown" id="countdown">Chargement…</div>
+        </header>
+        <div class="container">
+                <table id="expensesTable">
+                    <thead>
+                        <tr>
+                            <th >Élément</th>
+                            <th >Admin</th>
+                            <th >Coût (DT)</th>
+                            <th class="col-group-parts">Part Sarra</th>
+                            <th class="col-group-parts">Part Ferid</th>
+                            <th class="col-group-parts">Ràz</th>
+                            <th class="col-group-acomptes">Acompte Sarra</th>
+                            <th class="col-group-acomptes">Acompte Ferid</th>
+                            <th class="col-group-restant">Restant</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr>
+                            <td colspan="8" style="padding: 30px; color: #64748b;">🔄 Chargement des données en cours depuis Google Sheets...</td>
+                        </tr>
+                    </tbody>
+                </table>
+        </div>
+        <footer id="totalsPanel"></footer>
+        <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycby-wPLOUntOXbeYikAdyxGgppa7l_Ee8D77o90ls1Xz6Y-GWDbaDI9wSdRK4LPGpflvXg/exec";
+
+        let rowsData = [];
+
+        async function loadDataFromSheets() {
+            const tbody = document.getElementById('tableBody');
+
+            try {
+                const response = await fetch(API_URL, { method: "GET", mode: "cors" });
+                if (!response.ok) throw new Error("Erreur réseau");
+
+                const data = await response.json();
+
+                rowsData = data.map(item => ({
+                    element:       item.element || "Inconnu",
+                    admin:         item.admin || "",
+                    cout:          Number(item.cout)          || 0,
+                    partSarra:     Number(item.partSarra)     || 0,
+                    partFerid:     Number(item.partFerid)     || 0,
+                    acompteSarra:  Number(item.acompteSarra)  || 0,
+                    acompteFerid:  Number(item.acompteFerid)  || 0,
+                }));
+
+                renderTable();
+            
+            } catch (error) {
+            console.error("Erreur :", error);
+            tbody.innerHTML = '<tr><td colspan="9" style="padding:20px;color:red;">Erreur lors du chargement.</td></tr>';
+        }
+    }
+
+    function getRestant(row) {
+        return row.cout - row.acompteSarra - row.acompteFerid;
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        if (rowsData.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="9" style="padding:20px;">Aucune donnée trouvée.</td></tr>';
+            return;
+        }
+
+        for (let idx = 0; idx < rowsData.length; idx++) {
+            const row = rowsData[idx];
+            const tr = document.createElement('tr');
+
+            // Élément
+            const tdEl = document.createElement('td');
+            tdEl.className = 'element-name';
+            tdEl.textContent = row.element;
+            tr.appendChild(tdEl);
+
+            // Admin
+            const tdAdmin = document.createElement('td');
+            if (row.admin && row.admin.toUpperCase() === 'OK') {
+                tdAdmin.innerHTML = '<span class="badge-ok">✔ OK</span>';
+            } else {
+                tdAdmin.textContent = '—';
+                tdAdmin.style.color = '#6c757d';
+            }
+            tr.appendChild(tdAdmin);
+
+            // Coût (lecture seule)
+            const tdCout = document.createElement('td');
+            tdCout.className = 'readonly-cell';
+            tdCout.textContent = row.cout.toFixed(2) + ' DT';
+            tr.appendChild(tdCout);
+
+            // ── Part Sarra
+            const tdPS = document.createElement('td');
+            const inputPS = document.createElement('input');
+            inputPS.type = 'number';
+            inputPS.id = 'partSarra_' + idx;
+            inputPS.value = row.partSarra;
+            inputPS.step = "10";
+            inputPS.min = "0";
+            inputPS.max = row.cout;
+            inputPS.title = "Modifiez la part de Sarra → part Ferid se recalcule automatiquement";
+            inputPS.addEventListener('input', (function(i) {
+                return function(e) {
+                    let val = Math.min(Math.max(parseFloat(e.target.value) || 0, 0), rowsData[i].cout);
+                    rowsData[i].partSarra = val;
+                    rowsData[i].partFerid = rowsData[i].cout - val;
+                    const inputPF = document.getElementById('partFerid_' + i);
+                    if (inputPF) inputPF.value = rowsData[i].partFerid.toFixed(2);
+                    updateTotals();
+                };
+            })(idx));
+            tdPS.appendChild(inputPS);
+            tr.appendChild(tdPS);
+
+            // ── Part Ferid
+            const tdPF = document.createElement('td');
+            const inputPF = document.createElement('input');
+            inputPF.type = 'number';
+            inputPF.id = 'partFerid_' + idx;
+            inputPF.value = row.partFerid;
+            inputPF.step = "10";
+            inputPF.min = "0";
+            inputPF.max = row.cout;
+            inputPF.title = "Modifiez la part de Ferid → part Sarra se recalcule automatiquement";
+            inputPF.addEventListener('input', (function(i) {
+                return function(e) {
+                    let val = Math.min(Math.max(parseFloat(e.target.value) || 0, 0), rowsData[i].cout);
+                    rowsData[i].partFerid = val;
+                    rowsData[i].partSarra = rowsData[i].cout - val;
+                    const inputPS = document.getElementById('partSarra_' + i);
+                    if (inputPS) inputPS.value = rowsData[i].partSarra.toFixed(2);
+                    updateTotals();
+                };
+            })(idx));
+            tdPF.appendChild(inputPF);
+            tr.appendChild(tdPF);
+
+            // ── AJOUT : Colonne Ràz (Bouton Remise à zéro des parts)
+            const tdRaz = document.createElement('td');
+            const btnRaz = document.createElement('button');
+            btnRaz.type = 'button';
+            btnRaz.className = 'btn-raz';
+            btnRaz.textContent = '🔄';
+            btnRaz.title = "Remettre à zéro les parts de cette ligne";
+            btnRaz.addEventListener('click', (function(i) {
+                return function() {
+                    // Remise à zéro dans le modèle de données
+                    rowsData[i].partSarra = 0;
+                    rowsData[i].partFerid = 0;
+                    
+                    // Mise à jour visuelle des inputs de la ligne
+                    const inpPS = document.getElementById('partSarra_' + i);
+                    const inpPF = document.getElementById('partFerid_' + i);
+                    if (inpPS) inpPS.value = 0;
+                    if (inpPF) inpPF.value = 0;
+                    
+                    // Recalculer uniquement les totaux du bas
+                    updateTotals();
+                };
+            })(idx));
+            tdRaz.appendChild(btnRaz);
+            tr.appendChild(tdRaz);
+
+            // ── Acompte Sarra
+            const tdAS = document.createElement('td');
+            const inputAS = document.createElement('input');
+            inputAS.type = 'number';
+            inputAS.value = row.acompteSarra;
+            inputAS.step = "10";
+            inputAS.min = "0";
+            inputAS.title = "Modifiez l'acompte de Sarra → restant se recalcule";
+            inputAS.addEventListener('input', (function(i) {
+                return function(e) {
+                    let val = Math.max(parseFloat(e.target.value) || 0, 0);
+                    rowsData[i].acompteSarra = val;
+                    refreshRestantCell(i);
+                    updateTotals();
+                };
+            })(idx));
+            tdAS.appendChild(inputAS);
+            tr.appendChild(tdAS);
+
+            // ── Acompte Ferid
+            const tdAF = document.createElement('td');
+            const inputAF = document.createElement('input');
+            inputAF.type = 'number';
+            inputAF.value = row.acompteFerid;
+            inputAF.step = "10";
+            inputAF.min = "0";
+            inputAF.title = "Modifiez l'acompte de Ferid → restant se recalcule";
+            inputAF.addEventListener('input', (function(i) {
+                return function(e) {
+                    let val = Math.max(parseFloat(e.target.value) || 0, 0);
+                    rowsData[i].acompteFerid = val;
+                    refreshRestantCell(i);
+                    updateTotals();
+                };
+            })(idx));
+            tdAF.appendChild(inputAF);
+            tr.appendChild(tdAF);
+
+            // Restant
+            const tdRest = document.createElement('td');
+            const restVal = getRestant(row);
+            const spanRest = document.createElement('span');
+            spanRest.className = 'computed-cell ' + (restVal <= 0.01 ? 'restant-zero' : 'restant-cell');
+            spanRest.id = 'restant_' + idx;
+            spanRest.textContent = Math.max(0, restVal).toFixed(2) + ' DT';
+            spanRest.title = "Calculé automatiquement : coût − acompte Sarra − acompte Ferid";
+            tdRest.appendChild(spanRest);
+            tr.appendChild(tdRest);
+
+            tbody.appendChild(tr);
+        }
+
+        updateTotals();
+    }
+
+    function refreshRestantCell(i) {
+        const span = document.getElementById('restant_' + i);
+        if (!span) return;
+        const val = getRestant(rowsData[i]);
+        span.textContent = Math.max(0, val).toFixed(2) + ' DT';
+        span.className = 'computed-cell ' + (val <= 0.01 ? 'restant-zero' : 'restant-cell');
+    }
+
+    function updateTotals() {
+        let totalCout = 0, totalPartSarra = 0, totalPartFerid = 0;
+        let totalAcompteSarra = 0, totalAcompteFerid = 0, totalRestant = 0;
+
+        for (let row of rowsData) {
+            totalCout         += row.cout;
+            totalPartSarra    += row.partSarra;
+            totalPartFerid    += row.partFerid;
+            totalAcompteSarra += row.acompteSarra;
+            totalAcompteFerid += row.acompteFerid;
+            totalRestant      += Math.max(0, getRestant(row));
+        }
+
+        const panel = document.getElementById('totalsPanel');
+        if (panel) {
+            panel.innerHTML = `
+                <div class="total-card"><span>💰 Coût total</span><div class="value">${totalCout.toFixed(2)} DT</div></div>
+                <div class="total-card"><span>👩 Part Sarra</span><div class="value">${totalPartSarra.toFixed(2)} DT</div></div>
+                <div class="total-card"><span>👨 Part Ferid</span><div class="value">${totalPartFerid.toFixed(2)} DT</div></div>
+                <div class="total-card"><span>💸 Acompte Sarra</span><div class="value">${totalAcompteSarra.toFixed(2)} DT</div></div>
+                <div class="total-card"><span>💸 Acompte Ferid</span><div class="value">${totalAcompteFerid.toFixed(2)} DT</div></div>
+                <div class="total-card"><span>⏳ Restant global</span><div class="value" style="color:#b91c1c;">${totalRestant.toFixed(2)} DT</div></div>
+            `;
+        }
+    }
+    const countdownEl = document.getElementById("countdown");
+	const weddingDate = new Date("2027-05-29T21:00:00").getTime();
+	function updateCountdown() {
+		const now = new Date().getTime();
+		const distance = weddingDate - now;
+		if (distance < 0) {
+			countdownEl.innerHTML = "🎉 C'est le grand jour ! 🎊";
+
+			return;
+		}
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    const formattedHours = String(hours).padStart(2, '0');
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(seconds).padStart(2, '0');
+
+    countdownEl.innerHTML = `<i class="bi bi-hourglass-split"></i> ${days} jrs ${formattedHours} hrs ${formattedMinutes} mns ${formattedSeconds} scs`;
+  }
+
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
+
+    window.onload = function() {
+        loadDataFromSheets();
+    };
+        
+        function ouvrirIndex() {
+            if (document.startViewTransition) {
+                document.startViewTransition(() => {
+                    window.location.href = "index.html";
+                });
+            } else {
+                window.location.href = "index.html";
+            }
+        }
+        if (!document.startViewTransition) {
+            document.documentElement.classList.add("no-view-transition");
+        }
+        </script>
+    </body>
+</html>

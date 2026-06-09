@@ -1,0 +1,108 @@
+/* Menu réduit */
+.menu-panel{
+    position:absolute;
+    top:20px;
+    left:20px;
+
+    width:140px;
+    height:55px;
+
+    background:#fff;
+    border-radius:20px;
+
+    overflow:hidden;
+
+    transition:
+        width .5s ease,
+        height .5s ease,
+        border-radius .5s ease;
+
+    box-shadow:0 5px 20px rgba(0,0,0,.15);
+}
+
+/* Menu ouvert */
+.menu-panel.open{
+    width:320px;
+    height:420px;
+    border-radius:25px;
+}
+
+/* En-tête */
+
+/* Contenu */
+.menu-content{
+    opacity:0;
+    visibility:hidden;
+
+    padding:15px 25px;
+
+    transition:.2s;
+}
+
+.menu-panel.open .menu-content{
+    opacity:1;
+    visibility:visible;
+    transition-delay:.3s;
+}
+
+.menu-content ul{
+    list-style:none;
+}
+
+.menu-content li{
+    margin:18px 0;
+}
+
+.menu-content a{
+    text-decoration:none;
+    color:#111;
+    font-size:22px;
+    font-weight:700;
+    transition:.3s;
+}
+
+.menu-content a:hover{
+    padding-left:10px;
+}
+/**************************************************************/
+.menu-header{
+    height:55px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 20px;
+    cursor:pointer;
+    font-weight:bold;
+    user-select:none;
+    transition:.4s;
+}
+
+.menu-header.close-mode{
+    background:#e84d7a;
+    color:#fff;
+}
+
+.menu-title{
+    font-size:15px;
+    letter-spacing:1px;
+    pointer-events:none;   /* le texte n'est plus cliquable */
+}
+
+.menu-icon{
+    font-size:22px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;        /* seul l'icône est cliquable */
+}
+
+.menu-icon i{
+    transition:
+        transform .4s ease,
+        opacity .3s ease;
+}
+
+.menu-panel.open .menu-icon i{
+    transform:rotate(135deg);
+}
+/**************************************************************/
