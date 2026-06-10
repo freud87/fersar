@@ -233,56 +233,61 @@ main {
 /**************************************************************/
 @media screen and (max-width: 1080px) {
 
-    .card {
-        padding: 80px 20px 40px 20px;
-        width: 92%;
-    }
+/* 1. Ajustement global de la carte pour petits écrans */
+.card {
+    padding: 80px 20px 40px 20px; /* Plus d'espace en haut pour le menu absolu */
+    width: 92%;
+}
 
-    .card h2 {
-        font-size: 28px;
-    }
+.card h2 {
+    font-size: 28px; /* Titre légèrement plus petit */
+}
 
-    .subtitle {
-        font-size: 16px;
-    }
+.subtitle {
+    font-size: 16px;
+}
 
-    .menu-panel {
-        top: 15px;
-        left: 15px;
-    }
+/* 2. Optimisation du Menu Panel sur mobile */
+.menu-panel {
+    top: 15px;
+    left: 15px;
+}
 
-    .menu-panel.open {
-        width: calc(100% - 30px);
-        max-width: 320px;
-    }
+/* Ajustement de la taille du menu ouvert sur mobile */
+.menu-panel.open {
+    width: calc(100% - 30px); /* Prend presque toute la largeur disponible dans la carte */
+    max-width: 320px;         /* Évite qu'il devienne géant sur les tablettes */
+}
 
-    .menu-content a {
-        font-size: 18px;
-    }
+.menu-content a {
+    font-size: 18px; /* Liens du menu plus compacts */
+}
 
-    #countdown {
-        margin-top: 35px;
-        gap: 15px;
-    }
+/* 3. Réorganisation des boîtes de compte à rebours */
+#countdown {
+    margin-top: 35px;
+    gap: 15px; /* Moins d'espace entre les éléments */
+}
 
-    .box {
-        width: 44%;
-        min-width: 120px;
-        padding: 15px 5px;
-    }
+.box {
+    width: 44%; /* Permet de faire une grille propre de 2x2 sur mobile */
+    min-width: 120px;
+    padding: 15px 5px;
+}
 
-    .value {
-        font-size: 38px;
-    }
+.value {
+    font-size: 38px; /* Chiffres plus lisibles et adaptés */
+}
 
-    .label {
-        font-size: 14px;
-    }
+.label {
+    font-size: 14px;
+}
 
-    #logo {
-        top: 15px;
-        right: 15px;
-        width: 45px;
-        height: 45px;
-    }
+/* 4. Repositionnement du logo pour éviter les collisions */
+#logo {
+    top: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+}
 }
