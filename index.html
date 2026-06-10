@@ -129,6 +129,49 @@
  
             updateCountdown();
             setInterval(updateCountdown, 1000);
-        </script>
+        
+<script>
+if ("serviceWorker" in navigator) {
+
+  navigator.serviceWorker.register("./service-worker.js");
+
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    window.location.reload();
+  });
+
+  navigator.serviceWorker.ready.then(registration => {
+
+    registration.addEventListener("updatefound", () => {
+
+      const newWorker = registration.installing;
+
+      newWorker.addEventListener("statechange", () => {
+
+        if (
+          newWorker.state === "installed" &&
+          navigator.serviceWorker.controller
+        ) {
+
+          if (
+            confirm("🔄 Une nouvelle version est disponible.\n\nMettre à jour maintenant ?")
+          ) {
+
+            newWorker.postMessage({
+              action: "skipWaiting"
+            });
+
+          }
+
+        }
+
+      });
+
+    });
+
+  });
+
+}
+</script>
+</script>
     </body>
 </html>
