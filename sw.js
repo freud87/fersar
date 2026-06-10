@@ -1,4 +1,4 @@
-const CACHE = 'sarra-ferid-v1';
+
 const CACHE = 'sarra-ferid-v2';
 const ASSETS = [
   '/fersar/',
