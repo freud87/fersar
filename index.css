@@ -1,235 +1,231 @@
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Gulzar&display=swap');
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Cormorant Garamond', serif;
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family: 'Cormorant Garamond', serif;
 }
-
-body {
-    height: 100%;
-    background: linear-gradient(135deg, #f8fafc, #edf2f7, #dbeafe);
-    display: flex;
-    flex-direction: column;
-    margin: 0;
+body{
+height: 100%;
+background:linear-gradient(135deg,#f8fafc,#edf2f7,#dbeafe);
+display:flex;
+flex-direction:column;
+margin:0;
 }
-
 #logo {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-image: url('fersar2.png');
-    background-size: cover;
-    background-position: center;
-    border: 1px solid #d4af37;
-    flex-shrink: 0;
-    view-transition-name: logo;
+position: absolute;
+top: 20px;
+right: 20px;
+width: 50px; 
+height: 50px; 
+border-radius: 50%; 
+background-image: url('fersar2.png'); 
+background-size: cover; 
+background-position: center;
+border: 1px solid #d4af37; /* Optionnel : un petit liseré doré pour rappeler le logo */
+flex-shrink: 0;
+view-transition-name: logo;
 }
-
 main {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    min-height: 100dvh;
-    margin: 0;
-    padding: 1rem;
-    box-sizing: border-box;
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+min-height: 100dvh; /* dynamic viewport height — gère la barre d'adresse mobile */
+margin: 0;
+padding: 1rem;
+box-sizing: border-box;
 }
-
 .card {
-    position: relative;
-    /* POINT 1 : suppression de bottom: 50% qui décalait la carte */
-    /* POINT 2 : width déclaré une seule fois, cohérent avec max-width */
-    width: min(700px, 92%);
-    max-width: 700px;
-    box-sizing: border-box;
-    padding: 60px 30px;
-    text-align: center;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(12px) saturate(1.4);
-    -webkit-backdrop-filter: blur(12px) saturate(1.4);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 24px;
-    box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+position:relative;
+
+width:min(900px,95%);
+
+box-shadow:0 15px 40px rgba(0,0,0,.12);
+padding:60px 30px;
+text-align:center;
+bottom: 50%;
+    width: 90%;
+max-width: 700px;
+box-sizing: border-box;
+
+background: rgba(255, 255, 255, 0.08);
+backdrop-filter: blur(12px) saturate(1.4);
+-webkit-backdrop-filter: blur(12px) saturate(1.4);
+border: 1px solid rgba(255, 255, 255, 0.2);
+border-radius: 24px;
+box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+.menu-panel{
+position:absolute;
+top:20px;
+left:20px;
+width:140px;
+height:50px;
+background:#fff;
+border-radius:30px;
+overflow:hidden;
+transition:
+    width .5s ease,
+    height .5s ease,
+    border-radius .5s ease;
+box-shadow:0 5px 20px rgba(0,0,0,.15);
+}
+.menu-panel.open{
+width:320px;
+height:420px;/*comment ajuster la hauteur pour qu'elle soit 40px moins que la hauteur de .card*/
+border-radius:25px;
 }
 
-.menu-panel {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    width: 140px;
-    height: 50px;
-    background: #fff;
-    border-radius: 30px;
-    overflow: hidden;
-    transition:
-        width .5s ease,
-        height .5s ease,
-        border-radius .5s ease;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, .15);
+.menu-content{
+position:relative;
+opacity:0;
+visibility:hidden;
+padding:15px 25px;
+transition:.2s;
 }
 
-.menu-panel.open {
-    width: 320px;
-    /* POINT 6 : height géré uniquement par le JS, plus de valeur fixe */
-    border-radius: 25px;
+.menu-panel.open .menu-content{
+opacity:1;
+visibility:visible;
+transition-delay:.3s;
 }
 
-.menu-content {
-    position: relative;
-    opacity: 0;
-    visibility: hidden;
-    padding: 15px 25px;
-    transition: .2s;
+.menu-content ul{
+list-style:none;
 }
 
-.menu-panel.open .menu-content {
-    opacity: 1;
-    visibility: visible;
-    transition-delay: .3s;
+.menu-content li{
+margin:18px 0;
 }
 
-.menu-content ul {
-    list-style: none;
+.menu-content a{
+text-decoration:none;
+color:#111;
+font-size:22px;
+font-weight:700;
+transition:.3s;
 }
 
-.menu-content li {
-    margin: 18px 0;
+.menu-content a:hover{
+padding-left:10px;
+}
+/**************************************************************/
+.menu-header{
+height:55px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 20px;
+cursor:pointer;
+font-weight:bold;
+user-select:none;
+transition:.4s;
+box-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
 }
 
-.menu-content a {
-    text-decoration: none;
-    color: #111;
-    font-size: 22px;
-    font-weight: 700;
-    transition: .3s;
+.menu-header.close-mode{
+background:#e84d7a;
+color:#fff;
 }
 
-.menu-content a:hover {
-    padding-left: 10px;
-}
+.menu-title{
+font-size:20px;
+margin-left:10px;
+letter-spacing:1px;
+cursor:pointer;
 
-.menu-header {
-    height: 55px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    cursor: pointer;
-    font-weight: bold;
-    user-select: none;
-    transition: .4s;
-    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
-}
-
-.menu-header.close-mode {
-    background: #e84d7a;
-    color: #fff;
-}
-
-.menu-title {
-    font-size: 20px;
-    margin-left: 10px;
-    letter-spacing: 1px;
-    cursor: pointer;
-}
-
-.card h2,
-.card h3,
-.card .subtitle {
-    color: #ffffff;
-    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
-}
-
-.card h2 {
-    font-size: 36px;
-    font-weight: bold;
-}
-
-/* POINT 3 : .titre devient span, on lui applique le style inline précédent */
-.card h2 .titre {
-    font-size: 24px;
-    font-weight: bold;
-    display: inline;
-}
-
-.subtitle {
-    margin-top: 10px;
-    font-size: 18px;
-}
-
-#countdown {
-    margin-top: 50px;
-    display: flex;
-    justify-content: center;
-    gap: 25px;
-    flex-wrap: wrap;
-}
-
-.box {
-    width: 140px;
-    background: #f8fafc;
-    border-radius: 20px;
-    padding: 25px 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, .08);
-}
-
-.value {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 52px;
-    font-weight: 300;
-    color: #e84d7a;
-    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
-}
-
-.label {
-    font-family: 'Cairo', sans-serif;
-    margin-top: 8px;
-    color: #666;
-    font-size: 18px;
-    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
-}
-
-#slideshow {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-}
-
-.slide {
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: center;
-    opacity: 0;
-    transition: opacity 1.5s ease-in-out;
-}
-
-.slide.active {
-    opacity: 1;
-}
-
-#slideshow::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.45);
-}
-
-main {
-    position: relative;
-    z-index: 1;
 }
 
 /**************************************************************/
-/* RESPONSIVE                                                 */
+.card h2,
+.card h3,
+.card .subtitle {
+color: #ffffff;
+text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+.card h2{
+font-size:36px;
+font-weight:bold;
+}
+.subtitle{
+margin-top:10px;
+font-size:18px;
+}
+
+#countdown{
+margin-top:50px;
+display:flex;
+justify-content:center;
+gap:25px;
+flex-wrap:wrap;
+
+}
+.box{
+width:140px;
+
+background:#f8fafc;
+
+border-radius:20px;
+
+padding:25px 10px;
+
+box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+}
+
+.value{
+font-family: 'Cormorant Garamond', serif;
+font-size:52px;
+font-weight:500;
+color:#e84d7a;
+text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+.label{
+font-family: 'Cairo', sans-serif;
+margin-top:8px;
+color:#666;
+font-size:18px;
+text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+#slideshow {
+position: fixed;
+inset: 0;
+z-index: 0;
+}
+
+.slide {
+position: absolute;
+inset: 0;
+background-size: cover;
+background-position: center;
+opacity: 0;
+transition: opacity 1.5s ease-in-out;
+}
+
+.slide.active {
+opacity: 1;
+}
+
+/* Voile sombre pour lisibilité */
+#slideshow::after {
+content: '';
+position: absolute;
+inset: 0;
+background: rgba(0, 0, 0, 0.45);
+}
+
+/* La carte passe au-dessus du slideshow */
+main {
+position: relative;
+z-index: 1;
+}
+
+/**************************************************************/
+/* RESPONSIVE : MOBILE & TABLET (Max width: 1080px)           */
 /**************************************************************/
 @media screen and (max-width: 1080px) {
 
