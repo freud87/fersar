@@ -1,38 +1,61 @@
 
-const CACHE = 'sarra-ferid-v2';
+const VERSION = "3.0.0";
+const CACHE = `sarra-ferid-${VERSION}`;
+
 const ASSETS = [
-  '/fersar/',
-  '/fersar/index.html',
-  '/fersar/index.css',
-  '/fersar/manifest.json',
-  '/fersar/fersar2.png',
-  '/fersar/photos/photo1.jpg',
-  '/fersar/photos/photo2.jpg',
-  '/fersar/photos/photo3.jpg',
-  'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css'
+  "/fersar/",
+  "/fersar/index.html",
+  "/fersar/index.css",
+  "/fersar/manifest.json",
+  "/fersar/fersar2.png",
+  "/fersar/photos/photo1.jpg",
+  "/fersar/photos/photo2.jpg",
+  "/fersar/photos/photo3.jpg",
+  "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
 ];
 
-// Installation : mise en cache des assets
-self.addEventListener('install', e => {
-  e.waitUntil(
+// Installation
+self.addEventListener("install", event => {
+  self.skipWaiting();
+
+  event.waitUntil(
     caches.open(CACHE).then(cache => cache.addAll(ASSETS))
   );
-  self.skipWaiting();
 });
 
-// Activation : suppression des anciens caches
-self.addEventListener('activate', e => {
-  e.waitUntil(
+// Activation
+self.addEventListener("activate", event => {
+  event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    )
+      Promise.all(
+        keys
+          .filter(key => key !== CACHE)
+          .map(key => caches.delete(key))
+      )
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// Fetch : cache first, fallback réseau
-self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request))
+// Fetch : réseau d'abord, cache en secours
+self.addEventListener("fetch", event => {
+
+  if (event.request.method !== "GET") return;
+
+  event.respondWith(
+    fetch(event.request)
+      .then(response => {
+
+        const copy = response.clone();
+
+        caches.open(CACHE).then(cache => {
+          cache.put(event.request, copy);
+        });
+
+        return response;
+      })
+      .catch(() => {
+        return caches.match(event.request);
+      })
   );
+
 });
