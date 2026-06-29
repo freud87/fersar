@@ -1,5 +1,5 @@
 
-const VERSION = "3.0.1";
+const VERSION = "4.0.0";
 const CACHE = `sarra-ferid-${VERSION}`;
 
 const ASSETS = [
