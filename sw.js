@@ -1,11 +1,14 @@
 
-const VERSION = "3.0.0";
+const VERSION = "3.0.1";
 const CACHE = `sarra-ferid-${VERSION}`;
 
 const ASSETS = [
   "/fersar/",
   "/fersar/index.html",
   "/fersar/index.css",
+  "/fersar/frais.html",
+  "/fersar/frais.css",
+  "/fersar/moments.html",
   "/fersar/manifest.json",
   "/fersar/fersar2.png",
   "/fersar/photos/photo1.jpg",
