@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <title>Nos Moments - Sarra & Ferid</title>
+    <link rel="stylesheet" href="index.css"> <!-- Réutilisation directe du style d'index -->
+    <style>
+        /* Ajustements spécifiques pour la galerie Moments */
+        .gallery-wrapper {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            margin: 30px 0;
+            overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .gallery-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            cursor: grab;
+        }
+
+        .gallery-container:active {
+            cursor: grabbing;
+        }
+
+        .photo-slide {
+            min-width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        /* Flèches de navigation (Visibles sur PC / Écrans larges) */
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.7);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e84d7a;
+            font-size: 1.5rem;
+            transition: all 0.2s ease;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .nav-arrow:hover {
+            background: #e84d7a;
+            color: white;
+        }
+
+        .arrow-left { left: 15px; }
+        .arrow-right { right: 15px; }
+
+        /* Indicateurs de position (Points) */
+        .gallery-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #e84d7a;
+            transform: scale(1.2);
+        }
+
+        /* Masquer les flèches sur Mobile */
+        @media screen and (max-width: 1080px) {
+            .nav-arrow { display: none; }
+            .gallery-wrapper { height: 280px; }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="card">
+            <div id="logo"></div>
+            
+            <!-- Menu Panel identique à index.html -->
+            <div class="menu-panel" id="menu">
+                <div class="menu-header" id="toggleMenu">
+                    <span class="menu-title">Menu</span>
+                    <i class="bi bi-list"></i>
+                </div>
+                <div class="menu-content">
+                    <ul>
+                        <li><a href="index.html">Accueil</a></li>
+                        <li><a href="frais.html">Préparatifs</a></li>
+                        <li><a href="cagnotte.html">Cagnotte</a></li>
+                        <li><a href="social.html">Social</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>
+                <span class="titre">Nos Moments</span><br>
+                <i class="bi bi-camera-hearts" style="color: #e84d7a;"></i>
+            </h2>
+            <div class="subtitle" style="margin-bottom: 10px;">Quelques souvenirs précieux...</div>
+
+            <!-- Galerie d'images -->
+            <div class="gallery-wrapper">
+                <button class="nav-arrow arrow-left" id="prevBtn"><i class="bi bi-chevron-left"></i></button>
+                <div class="gallery-container" id="galleryContainer">
+                    <!-- Les photos chargées depuis Google Sheets apparaîtront ici -->
+                    <div style="display:flex; justify-content:center; align-items:center; width:100%; color:#fff;">
+                        <span>🔄 Chargement des souvenirs...</span>
+                    </div>
+                </div>
+                <button class="nav-arrow arrow-right" id="nextBtn"><i class="bi bi-chevron-right"></i></button>
+            </div>
+
+            <!-- Points de navigation sous la galerie -->
+            <div class="gallery-dots" id="galleryDots"></div>
+        </div>
+    </main>
+
+    <!-- Arrière-plan flouté d'index -->
+    <div id="slideshow">
+        <div class="slide active" style="background-image: url('photos/photo1.jpg')"></div>
+    </div>
+
+    <script>
+        // Gestion du Menu réutilisée de l'index
+        const menu = document.getElementById("menu");
+        const menuHeader = document.getElementById("toggleMenu");
+        function closeMenu() {
+            menu.classList.remove("open");
+            menuHeader.classList.remove("close-mode");
+        }
+        menuHeader.onclick = (e) => {
+            e.stopPropagation();
+            menu.classList.toggle("open");
+            menuHeader.classList.toggle("close-mode");
+        };
+        document.addEventListener("click", closeMenu);
+
+        // API Apps Script (Modifiez l'URL de votre macro si elle diffère de frais.html)
+        const API_URL_PHOTOS = "https://script.google.com/macros/s/AKfycby-wPLOUntOXbeYikAdyxGgppa7l_Ee8D77o90ls1Xz6Y-GWDbaDI9wSdRK4LPGpflvXg/exec?type=photos"; 
+        
+        let currentIndex = 0;
+        let photosIds = [];
+        const container = document.getElementById("galleryContainer");
+        const dotsContainer = document.getElementById("galleryDots");
+
+        // Récupération des IDs Drive stockés dans la feuille "photos"
+        async function loadGalleryPhotos() {
+            try {
+                const response = await fetch(API_URL_PHOTOS + "&nocache=" + Date.now()); // anti-cache
+                const data = await response.json();
+                
+                console.log("Données reçues :", data); // 👈 À regarder dans la console (F12)
+                
+                if (!data || data.length === 0) {
+                container.innerHTML = `<div style="color:white; margin:auto;">Aucune photo trouvée.</div>`;
+                return;
+                }
+                
+                // On utilise directement l'URL générée par le serveur
+                photosIds = data.map(item => ({ id: item.photoId, url: item.url })).filter(p => p.url);
+                renderGallery();
+            } catch (error) {
+                console.error("Erreur :", error);
+                container.innerHTML = `<div style="color:white; margin:auto;">Erreur : ${error.message}</div>`;
+            }
+            }
+
+            function renderGallery() {
+            container.innerHTML = "";
+            dotsContainer.innerHTML = "";
+
+            photosIds.forEach((photo, idx) => {
+                const slide = document.createElement("div");
+                slide.className = "photo-slide";
+                slide.style.backgroundImage = `url('${photo.url}')`;
+                
+                // Debug : si l'image ne charge pas, on l'affiche
+                slide.style.backgroundColor = "rgba(255,0,0,0.2)";
+                slide.title = "ID: " + photo.id;
+                
+                container.appendChild(slide);
+
+                const dot = document.createElement("div");
+                dot.className = `dot ${idx === 0 ? 'active' : ''}`;
+                dot.addEventListener("click", () => goToSlide(idx));
+                dotsContainer.appendChild(dot);
+            });
+
+            updateGalleryPosition();
+            }
+
+        function goToSlide(index) {
+            if (index < 0) currentIndex = photosIds.length - 1;
+            else if (index >= photosIds.length) currentIndex = 0;
+            else currentIndex = index;
+            updateGalleryPosition();
+        }
+
+        function updateGalleryPosition() {
+            container.style.transform = `translateX(-${currentIndex * 100}%)`;
+            
+            // Mise à jour des points
+            const dots = document.querySelectorAll(".dot");
+            dots.forEach((dot, idx) => {
+                dot.classList.toggle("active", idx === currentIndex);
+            });
+        }
+
+        // Événements boutons PC
+        document.getElementById("nextBtn").addEventListener("click", () => goToSlide(currentIndex + 1));
+        document.getElementById("prevBtn").addEventListener("click", () => goToSlide(currentIndex - 1));
+
+        // --- GESTION DU GLISSEMENT TACTILE ET SOURIS (SWIPE) ---
+        let startX = 0;
+        let isDragging = false;
+
+        container.addEventListener("touchstart", (e) => { startX = e.touches[0].clientX; isDragging = true; });
+        container.addEventListener("touchend", (e) => {
+            if (!isDragging) return;
+            let diffX = startX - e.changedTouches[0].clientX;
+            if (Math.abs(diffX) > 50) { // Seuil de 50px pour valider le swipe
+                if (diffX > 0) goToSlide(currentIndex + 1); // Swipe gauche -> Suivant
+                else goToSlide(currentIndex - 1); // Swipe droite -> Précédent
+            }
+            isDragging = false;
+        });
+
+        // Version Souris pour simuler le glissement sur PC aussi si désiré
+        container.addEventListener("mousedown", (e) => { startX = e.clientX; isDragging = true; });
+        container.addEventListener("mouseup", (e) => {
+            if (!isDragging) return;
+            let diffX = startX - e.clientX;
+            if (Math.abs(diffX) > 50) {
+                if (diffX > 0) goToSlide(currentIndex + 1);
+                else goToSlide(currentIndex - 1);
+            }
+            isDragging = false;
+        });
+
+        window.onload = loadGalleryPhotos;
+        
+    </script>
+</body>
+</html>
